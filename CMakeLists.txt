@@ -5,17 +5,28 @@ find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets OpenGL Widgets OpenGLWidge
 
 qt_standard_project_setup()
 
-qt_add_executable(MeshViewer
-    WIN32 MACOSX_BUNDLE
-    main.cpp
-    mainwindow.cpp
-    mainwindow.h
-    mainwindow.ui
-    openGLWidget.h
-    openGLWidget.cpp
-    camera.h
-    camera.cpp
-    vertex.h
+include_directories(${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/ui)
+
+set(SOURCES
+    src/main.cpp
+    src/mainwindow.ui
+    src/mainwindow.cpp
+    src/openGLWidget.cpp
+    src/camera.cpp
+    src/mesh.cpp
+)
+
+set(HEADERS
+    include/mainwindow.h
+    include/openGLWidget.h
+    include/camera.h
+    include/vertex.h
+    include/mesh.h
+)
+
+
+qt_add_executable(MeshViewer WIN32 MACOSX_BUNDLE
+    ${SOURCES} ${HEADERS}
 )
 
 target_include_directories(MeshViewer
