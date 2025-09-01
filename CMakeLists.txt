@@ -5,7 +5,7 @@ find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets OpenGL Widgets OpenGLWidge
 
 qt_standard_project_setup()
 
-include_directories(${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/ui)
+include_directories(${PROJECT_SOURCE_DIR}/include)
 
 set(SOURCES
     src/main.cpp
@@ -13,6 +13,7 @@ set(SOURCES
     src/mainwindow.cpp
     src/openGLWidget.cpp
     src/camera.cpp
+    src/vertex.cpp
     src/mesh.cpp
 )
 
@@ -49,6 +50,13 @@ foreach(SHADER_FILE ${SHADERS})
     get_filename_component(SHADER_NAME ${SHADER_FILE} NAME)
     configure_file(${SHADER_FILE} ${CMAKE_CURRENT_BINARY_DIR}/shaders/${NAME})
 endforeach()
+
+# file(GLOB DATA "${CMAKE_CURRENT_SOURCE_DIR}/data/*")
+# file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/data")
+# foreach(DATA_FILE ${DATA})
+#     get_filename_component(DATA_NAME ${DATA_FILE} NAME)
+#     configure_file(${DATA_FILE} ${CMAKE_CURRENT_BINARY_DIR}/data/${NAME})
+# endforeach()
 
 include(GNUInstallDirs)
 

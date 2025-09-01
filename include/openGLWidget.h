@@ -8,13 +8,25 @@
 #include <QWheelEvent>
 
 #include "camera.h"
+#include "mesh.h"
 
 class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
     Q_OBJECT
 
+signals:
+    void verticesChanged(int value);
+    void trianglesChanged(int value);
+
+
 public:
     explicit OpenGLWidget(QWidget *parent = nullptr);
     ~OpenGLWidget();
+
+    void loadMesh(const char* link);
+    void updateMeshBuffers();
+
+public slots:
+    void setWireframe(bool enabled);
 
 protected:
     void initializeGL() override;
@@ -28,12 +40,16 @@ protected:
 
     GLuint VAO;
     GLuint VBO;
+    GLuint EBO;
     QOpenGLShaderProgram *shaderProgram;
 
     Camera camera;
     QPointF lastMousePos;
     bool leftPressed;
     bool middlePressed;
+
+    Mesh mesh;
+    bool wireframe;
 
 };
 

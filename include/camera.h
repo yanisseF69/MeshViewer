@@ -13,11 +13,15 @@ public:
            float startYaw = -90.0f,
            float startPitch = 0.0f);
 
+    QVector3D getPosition() const;
+    QVector3D getTarget() const;
     QMatrix4x4 getView() const;
     QMatrix4x4 getProjection() const;
     float getAngleX() const;
     float getAngleY() const;
 
+    void setPosition(QVector3D pos);
+    void setTarget(QVector3D target);
     void setAspect(float width, float height);
     void setAspect(float aspect);
     void setAngleX(float x);

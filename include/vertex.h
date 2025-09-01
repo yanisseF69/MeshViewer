@@ -6,6 +6,8 @@
 
 struct Vertex
 {
+    Vertex(const float &x, const float &y, const float &z);
+
     QVector3D position;
     QVector3D normal;
     QVector2D texCoords;

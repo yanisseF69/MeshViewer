@@ -1,6 +1,6 @@
 #include "openGLWidget.h"
 
-OpenGLWidget::OpenGLWidget(QWidget *parent) : QOpenGLWidget(parent), VAO(0), VBO(0), shaderProgram(nullptr), leftPressed(false), middlePressed(false){
+OpenGLWidget::OpenGLWidget(QWidget *parent) : QOpenGLWidget(parent), VAO(0), VBO(0), EBO(0), shaderProgram(nullptr), leftPressed(false), middlePressed(false), wireframe(false) {
 
 }
 
@@ -12,38 +12,70 @@ OpenGLWidget::~OpenGLWidget() {
     doneCurrent();
 }
 
-void OpenGLWidget::initializeGL() {
-    initializeOpenGLFunctions();
-    glEnable(GL_DEPTH_TEST);
+void OpenGLWidget::loadMesh(const char *link) {
+    mesh.loadOFF(link);
+    updateMeshBuffers();
+}
 
+
+void OpenGLWidget::updateMeshBuffers() {
+    makeCurrent();
     glClearColor(0.0f, 0.5f, 0.0f, 1.0f);
-    float vertices[] = {
-        0.0f,  0.5f, 0.0f, 1.0f,  0.0f, 0.0f,
-        -0.5f, -0.5f, 0.5f, 0.0f,  1.0f, 0.0f,
-        0.5f, -0.5f, -0.5f, 0.0f,  0.0f, 1.0f
-    };
+
+    if (VAO) glDeleteVertexArrays(1, &VAO);
+    if (VBO) glDeleteBuffers(1, &VBO);
+    if (EBO) glDeleteBuffers(1, &EBO);
+
+    auto vertices = mesh.getVertices();
+    auto indices = mesh.getIndices();
 
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
 
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
     glEnableVertexAttribArray(1);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
+    doneCurrent();
+
+    emit verticesChanged(vertices.size());
+    emit trianglesChanged(indices.size() / 3);
+
+    update();
+}
+
+void OpenGLWidget::setWireframe(bool enabled) {
+    wireframe = enabled;
+    update();
+}
+
+void OpenGLWidget::initializeGL() {
+    initializeOpenGLFunctions();
+    glEnable(GL_DEPTH_TEST);
+
+    glClearColor(0.0f, 0.5f, 0.0f, 1.0f);
+
     shaderProgram = new QOpenGLShaderProgram(this);
     shaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/vertex.glsl");
     shaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/fragment.glsl");
     shaderProgram->link();
+
+    emit verticesChanged(0);
+    emit trianglesChanged(0);
 }
 
 void OpenGLWidget::resizeGL(int w, int h) {
@@ -54,6 +86,12 @@ void OpenGLWidget::resizeGL(int w, int h) {
 
 void OpenGLWidget::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    if (wireframe) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+
+    auto indices = mesh.getIndices();
 
     QMatrix4x4 model, view, projection;
     model.setToIdentity();
@@ -67,7 +105,7 @@ void OpenGLWidget::paintGL() {
     shaderProgram->setUniformValue("projection", projection);
 
     glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLE_FAN, 0, 3);
+    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
     shaderProgram->release();
 }
@@ -92,7 +130,6 @@ void OpenGLWidget::mouseMoveEvent(QMouseEvent *event) {
         camera.setAngleY(angleY);
         update();
     }
-
 }
 
 void OpenGLWidget::wheelEvent(QWheelEvent *event) {

@@ -5,6 +5,14 @@ Camera::Camera(QVector3D startPosition, QVector3D startUp, float startYaw, float
     updateCameraVectors();
 }
 
+QVector3D Camera::getPosition() const{
+    return position;
+}
+
+QVector3D Camera::getTarget() const{
+    return target;
+}
+
 QMatrix4x4 Camera::getView() const{
     QMatrix4x4 view;
     float radX = qDegreesToRadians(angleX);
@@ -34,6 +42,16 @@ float Camera::getAngleX() const {
 
 float Camera::getAngleY() const {
     return angleY;
+}
+
+void Camera::setPosition(QVector3D pos) {
+    position = pos;
+    updateCameraVectors();
+}
+
+void Camera::setTarget(QVector3D target) {
+    target = target;
+    updateCameraVectors();
 }
 
 void Camera::setAspect(float width, float height) {
