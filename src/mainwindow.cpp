@@ -15,6 +15,8 @@ MainWindow::MainWindow(QWidget *parent)
     QSurfaceFormat::setDefaultFormat(format);
     ui->setupUi(this);
 
+    this->setWindowTitle("Mesh Viewer");
+
     connect(ui->actionLoad, &QAction::triggered, this, &MainWindow::onActionLoad);
     connect(ui->openGLWidget, &OpenGLWidget::verticesChanged, this, [=](unsigned int count) {
         ui->verticesCount->setText(QString::number(count));
