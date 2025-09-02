@@ -11,13 +11,13 @@ vec3 fragmentShader(vec3 n, vec3 l)
     return vec3(cos_theta);
 }
 
-vec4 toonShading(vec3 n, vec3 l, float levels) {
+vec3 toonShading(vec3 n, vec3 l, float levels) {
     float cos_theta = dot(normalize(n), normalize(l));
     float quantize = floor(cos_theta * levels) / levels;
 
     float brightness = 0.25 + 0.5 * quantize;
 
-    return vec4(vec3(brightness), 1.0);
+    return vec3(brightness);
 }
 
 

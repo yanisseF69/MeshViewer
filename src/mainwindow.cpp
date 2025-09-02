@@ -38,7 +38,7 @@ void MainWindow::onActionLoad() {
         this,
         tr("Open a mesh file"),
         QString(),
-        tr("Mesh file (*.obj)::All files (*.*)")
+        tr("Mesh file (*.off);;All files (*.*)")
         );
 
     if (!filename.isEmpty()) {
