@@ -15,7 +15,7 @@ public:
 
     QVector3D getPosition() const;
     QVector3D getTarget() const;
-    QMatrix4x4 getView() const;
+    QMatrix4x4 getView();
     QMatrix4x4 getProjection() const;
     float getAngleX() const;
     float getAngleY() const;
@@ -27,6 +27,7 @@ public:
     void setAngleX(float x);
     void setAngleY(float y);
 
+    void initialize(QVector3D center, float radius);
     void orbit(float xoffset, float yoffset, bool constrainPitch = false);
     void zoom(float yoffset);
 

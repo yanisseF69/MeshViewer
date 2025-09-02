@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
     QSurfaceFormat format;
     format.setVersion(3, 3);
     format.setProfile(QSurfaceFormat::CoreProfile);
-    format.setDepthBufferSize(24);
+    format.setDepthBufferSize(36);
     QSurfaceFormat::setDefaultFormat(format);
     ui->setupUi(this);
 
@@ -40,7 +40,7 @@ void MainWindow::onActionLoad() {
         this,
         tr("Open a mesh file"),
         QString(),
-        tr("Mesh file (*.off);;All files (*.*)")
+        tr("Mesh file (*.obj *.off);;All files (*.*)")
         );
 
     if (!filename.isEmpty()) {

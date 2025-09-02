@@ -13,7 +13,15 @@ OpenGLWidget::~OpenGLWidget() {
 }
 
 void OpenGLWidget::loadMesh(const char *link) {
-    mesh.loadOFF(link);
+    int ok = mesh.loadFile(link);
+    if (ok < 0) {
+        qDebug() << "Error while loading file\n";
+        mesh.clear();
+    }
+    QVector3D center = mesh.getCenter();
+    float radius = mesh.getBoundingRadius();
+    camera.initialize(center, radius);
+
     updateMeshBuffers();
 }
 

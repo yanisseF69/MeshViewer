@@ -13,7 +13,7 @@ QVector3D Camera::getTarget() const{
     return target;
 }
 
-QMatrix4x4 Camera::getView() const{
+QMatrix4x4 Camera::getView() {
     QMatrix4x4 view;
     float radX = qDegreesToRadians(angleX);
     float radY = qDegreesToRadians(angleY);
@@ -24,8 +24,9 @@ QMatrix4x4 Camera::getView() const{
         distance * cos(radY) * cos(radX)
         );
 
-    QVector3D target(0,0,0);
-    view.lookAt(cameraPos, target, up);
+    position = cameraPos;
+
+    view.lookAt(position, target, up);
     return view;
 }
 
@@ -68,6 +69,17 @@ void Camera::setAngleX(float x) {
 
 void Camera::setAngleY(float y) {
     angleY = y;
+}
+
+void Camera::initialize(QVector3D center, float radius) {
+    setTarget(center);
+    QVector3D initPos = center + QVector3D(0, 0, radius * 1.5f + 1);
+    setPosition(initPos);
+    distance = (initPos - center).length();
+    setAngleX(0);
+    setAngleY(0);
+
+    updateCameraVectors();
 }
 
 void Camera::orbit(float xoffset, float yoffset, bool constrainPitch) {

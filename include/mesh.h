@@ -15,8 +15,12 @@ public:
     const std::vector<unsigned int> &getIndices() const;
 
     void clear();
+    int loadFile(const char* link);
     void loadOFF(const char* link);
-    void computeNormals();
+    void loadOBJ(const char* link);
+
+    QVector3D getCenter() const;
+    float getBoundingRadius() const;
 
 private:
     std::vector<Vertex> vertices;
