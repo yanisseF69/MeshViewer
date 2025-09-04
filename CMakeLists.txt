@@ -14,6 +14,7 @@ set(SOURCES
     src/openGLWidget.cpp
     src/camera.cpp
     src/vertex.cpp
+    src/triangle.cpp
     src/mesh.cpp
 )
 
@@ -22,6 +23,7 @@ set(HEADERS
     include/openGLWidget.h
     include/camera.h
     include/vertex.h
+    include/triangle.h
     include/mesh.h
 )
 

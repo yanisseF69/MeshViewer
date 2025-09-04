@@ -24,5 +24,6 @@ vec3 toonShading(vec3 n, vec3 l, float levels) {
 void main() {
     vec3 lightDir = normalize(vec3(0.0, 0.0, 1.0));
     vec3 color = fragmentShader(Normal, lightDir);
-    FragColor = vec4(color, 1.0);
+    // vec3 color = toonShading(Normal, lightDir, 2.0);
+    FragColor = vec4(abs(color), 1.0);
 }

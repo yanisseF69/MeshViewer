@@ -14,6 +14,8 @@ public:
            float startPitch = 0.0f);
 
     QVector3D getPosition() const;
+    QVector3D getUp() const;
+    QVector3D getRight() const;
     QVector3D getTarget() const;
     QMatrix4x4 getView();
     QMatrix4x4 getProjection() const;
@@ -29,6 +31,7 @@ public:
 
     void initialize(QVector3D center, float radius);
     void orbit(float xoffset, float yoffset, bool constrainPitch = false);
+    void pan(float xoffset, float yoffset);
     void zoom(float yoffset);
 
 

@@ -3,11 +3,12 @@
 #include "openGLWidget.h"
 #include <QSurfaceFormat>
 #include <QFileDialog>
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    : QMainWindow(parent), ui(new Ui::MainWindow)
 {
+    errorTimer = new QTimer();
     QSurfaceFormat format;
     format.setVersion(3, 3);
     format.setProfile(QSurfaceFormat::CoreProfile);
@@ -26,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent)
     });
     connect(ui->wireframeCheck, &QCheckBox::toggled,
             ui->openGLWidget, &OpenGLWidget::setWireframe);
+    connect(errorTimer, SIGNAL(timeout()), this, SLOT(clearErrorLabel()));
 
 
 }
@@ -33,6 +35,11 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete errorTimer;
+}
+
+void MainWindow::clearErrorLabel() {
+    ui->meshErrorLabel->clear();
 }
 
 void MainWindow::onActionLoad() {
@@ -40,10 +47,29 @@ void MainWindow::onActionLoad() {
         this,
         tr("Open a mesh file"),
         QString(),
-        tr("Mesh file (*.obj *.off);;All files (*.*)")
+        tr("Mesh file (*.txt *.obj *.off);;All files (*.*)")
         );
 
     if (!filename.isEmpty()) {
-        ui->openGLWidget->loadMesh(filename.toStdString().c_str());
+        int ok = ui->openGLWidget->loadMesh(filename.toStdString().c_str());
+        switch(ok) {
+        case MeshError::FORMAT:
+            errorTimer->setSingleShot(true);
+            errorTimer->start(5000);
+            ui->meshErrorLabel->setText("Wrong file format, please check the selected file.");
+            break;
+        case MeshError::READ:
+            errorTimer->setSingleShot(true);
+            errorTimer->start(5000);
+            ui->meshErrorLabel->setText("Error while reading the mesh file, please check the selected file.");
+            break;
+        case MeshError::UNKNOWN:
+            errorTimer->setSingleShot(true);
+            errorTimer->start(5000);
+            ui->meshErrorLabel->setText("Unknown error, please try again and check the selected file.");
+            break;
+        default:
+            break;
+        }
     }
 }

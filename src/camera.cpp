@@ -9,23 +9,20 @@ QVector3D Camera::getPosition() const{
     return position;
 }
 
+QVector3D Camera::getUp() const{
+    return up;
+}
+
+QVector3D Camera::getRight() const{
+    return right;
+}
+
 QVector3D Camera::getTarget() const{
     return target;
 }
 
 QMatrix4x4 Camera::getView() {
     QMatrix4x4 view;
-    float radX = qDegreesToRadians(angleX);
-    float radY = qDegreesToRadians(angleY);
-
-    QVector3D cameraPos(
-        distance * cos(radY) * sin(radX),
-        distance * sin(radY),
-        distance * cos(radY) * cos(radX)
-        );
-
-    position = cameraPos;
-
     view.lookAt(position, target, up);
     return view;
 }
@@ -73,7 +70,7 @@ void Camera::setAngleY(float y) {
 
 void Camera::initialize(QVector3D center, float radius) {
     setTarget(center);
-    QVector3D initPos = center + QVector3D(0, 0, radius * 1.5f + 1);
+    QVector3D initPos = center + QVector3D(0, 0, radius * 2.0f + 1);
     setPosition(initPos);
     distance = (initPos - center).length();
     setAngleX(0);
@@ -83,19 +80,41 @@ void Camera::initialize(QVector3D center, float radius) {
 }
 
 void Camera::orbit(float xoffset, float yoffset, bool constrainPitch) {
-    float sensitivity = 0.1f;
+    float sensitivity = 0.5f;
+    angleX += xoffset * sensitivity;
+    angleY -= yoffset * sensitivity;
+
+    if (constrainPitch) {
+        if (angleY > 89.0f) angleY = 89.0f;
+        if (angleY < -89.0f) angleY = -89.0f;
+    }
+
+    float radX = qDegreesToRadians(angleX);
+    float radY = qDegreesToRadians(angleY);
+
+    QVector3D cameraPos(
+        distance * cos(radY) * sin(radX),
+        distance * sin(radY),
+        distance * cos(radY) * cos(radX)
+        );
+
+    position = cameraPos;
+    updateCameraVectors();
+}
+
+void Camera::pan(float xoffset, float yoffset) {
+    float sensitivity = 0.01f;
     xoffset *= sensitivity;
     yoffset *= sensitivity;
 
-    yaw += xoffset;
-    pitch += yoffset;
+    QVector3D panOffset = -xoffset * right + yoffset * up;
 
-    if (constrainPitch) {
-        if(pitch > 89.0f) pitch = 89.0f;
-        if(pitch < -89.0f) pitch = -89.0f;
-    }
+    position += panOffset;
+    target   += panOffset;
+
     updateCameraVectors();
 }
+
 
 void Camera::zoom(float yoffset) {
     fov -= yoffset;

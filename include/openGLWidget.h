@@ -22,7 +22,7 @@ public:
     explicit OpenGLWidget(QWidget *parent = nullptr);
     ~OpenGLWidget();
 
-    void loadMesh(const char* link);
+    int loadMesh(const char* link);
     void updateMeshBuffers();
 
 public slots:

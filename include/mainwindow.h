@@ -13,6 +13,11 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+signals:
+
+public slots:
+    void clearErrorLabel();
+
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
@@ -21,5 +26,6 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    QTimer *errorTimer;
 };
 #endif // MAINWINDOW_H

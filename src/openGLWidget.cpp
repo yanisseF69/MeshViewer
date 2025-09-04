@@ -12,10 +12,9 @@ OpenGLWidget::~OpenGLWidget() {
     doneCurrent();
 }
 
-void OpenGLWidget::loadMesh(const char *link) {
+int OpenGLWidget::loadMesh(const char *link) {
     int ok = mesh.loadFile(link);
-    if (ok < 0) {
-        qDebug() << "Error while loading file\n";
+    if (ok > 0) {
         mesh.clear();
     }
     QVector3D center = mesh.getCenter();
@@ -23,6 +22,7 @@ void OpenGLWidget::loadMesh(const char *link) {
     camera.initialize(center, radius);
 
     updateMeshBuffers();
+    return ok;
 }
 
 
@@ -126,16 +126,13 @@ void OpenGLWidget::mouseMoveEvent(QMouseEvent *event) {
     QPointF delta = event->position() - lastMousePos;
     lastMousePos = event->position();
 
-    float angleX = camera.getAngleX();
-    float angleY = camera.getAngleY();
-
     if (event->buttons() & Qt::LeftButton) {
-        angleX += delta.x() * 0.5f;
-        angleY -= delta.y() * 0.5f;
-        if (angleY > 89.0f) angleY = 89.0f;
-        if (angleY < -89.0f) angleY = -89.0f;
-        camera.setAngleX(angleX);
-        camera.setAngleY(angleY);
+        camera.orbit(delta.x(), delta.y());
+        update();
+    }
+
+    if (event->buttons() & Qt::RightButton) {
+        camera.pan(delta.x(), delta.y());
         update();
     }
 }
