@@ -1,4 +1,5 @@
 #include "openGLWidget.h"
+#include "config.h"
 
 OpenGLWidget::OpenGLWidget(QWidget *parent) : QOpenGLWidget(parent), VAO(0), VBO(0), EBO(0), shaderProgram(nullptr), leftPressed(false), middlePressed(false), wireframe(false) {
 
@@ -77,9 +78,11 @@ void OpenGLWidget::initializeGL() {
 
     glClearColor(0.0f, 0.5f, 0.0f, 1.0f);
 
+    QString shaderDir = QString(MESHVIEWER_DATA_DIR) + "/shaders/";
+
     shaderProgram = new QOpenGLShaderProgram(this);
-    shaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/vertex.glsl");
-    shaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/fragment.glsl");
+    shaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, shaderDir + "vertex.glsl");
+    shaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, shaderDir + "fragment.glsl");
     shaderProgram->link();
 
     emit verticesChanged(0);
