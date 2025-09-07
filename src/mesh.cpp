@@ -1,9 +1,13 @@
 #include "mesh.h"
+#include "edgeKeyHash.h"
 
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <exception>
+#include <set>
+#include <stack>
+#include <queue>
 
 Mesh::Mesh() {}
 
@@ -28,21 +32,35 @@ void Mesh::clear() {
 }
 
 void Mesh::sew() {
-    std::map<std::pair<int, int>, std::pair<int, int>> map; // idVertice, idVertice, idFace, idOppositeVertice
-    for(size_t i = 0; i < faces.size(); i++) {
-        for(int j = 0; j < 3; j++) {
-            std::pair<int, int> tmp(faces[i].idVertices[j], faces[i].idVertices[(j+1)%3]);
-            std::pair<int, int> tmp2(faces[i].idVertices[(j+1)%3], faces[i].idVertices[j]);
-            if(map.count(tmp2) == 0) {
-                std::pair<int, int> face(i, (j+2)%3);
-                map.insert(std::make_pair(tmp, face));
-            } else {
-                std::pair<int,int> incidentFace = map.at(tmp2);
-                faces[i].idFaces.push_back(incidentFace.first);
-                faces[incidentFace.first].idFaces.push_back(i);
+    for (auto& f : faces) f.idFaces.clear();
 
+    std::unordered_map<std::pair<int,int>, std::pair<int,int>, EdgeKeyHash> halfedge;
+
+    for (int fi = 0; fi < static_cast<int>(faces.size()); ++fi) {
+        faces[fi].idFaces.resize(3, -1);
+        auto& tri = faces[fi];
+        for (int e = 0; e < 3; ++e) {
+            int u = tri.idVertices[e];
+            int v = tri.idVertices[(e+1)%3];
+            auto key = std::make_pair(u, v);
+            halfedge.emplace(key, std::make_pair(fi, e));
+        }
+    }
+
+    for (int fi = 0; fi < static_cast<int>(faces.size()); ++fi) {
+        auto& tri = faces[fi];
+        for (int e = 0; e < 3; ++e) {
+            if (tri.idFaces[e] != -1) continue;
+            int u = tri.idVertices[e];
+            int v = tri.idVertices[(e+1)%3];
+            auto oppKey = std::make_pair(v, u);
+            auto it = halfedge.find(oppKey);
+            if (it != halfedge.end()) {
+                int fj = it->second.first;
+                int ej = it->second.second;
+                tri.idFaces[e] = fj;
+                faces[fj].idFaces[ej] = fi;
             }
-
         }
     }
 }
@@ -209,7 +227,7 @@ int Mesh::loadOBJ(const char* link) {
 int Mesh::loadTXT(const char* link) {
     std::ifstream meshFile(link);
     if (!meshFile.is_open()) {
-        return READ;
+        return MeshError::READ;
     }
 
     auto nextToken = [&](std::string &token) {
@@ -226,7 +244,6 @@ int Mesh::loadTXT(const char* link) {
 
     size_t numVertices = 0;
     std::string token;
-
     if (!nextToken(token)) return MeshError::READ;
     try {
         numVertices = std::stoul(token);
@@ -237,19 +254,59 @@ int Mesh::loadTXT(const char* link) {
     }
 
     clear();
+    vertices.push_back(QVector3D(-100000.0f, -100000.0f, 0.0f));
+    vertices.push_back(QVector3D(100000.0f, -100000.0f, 0.0f));
+    vertices.push_back(QVector3D(0.0f, 100000.0f, 0.0f));
+    faces.push_back(Triangle(0, 1, 2));
+    sew();
+
+    std::cout << "Inserting " << numVertices << " points..." << std::endl;
 
     for (size_t i = 0; i < numVertices; ++i) {
         float x, y, z;
         if (!(meshFile >> x >> y >> z)) {
+            std::cerr << "Error reading point " << i << std::endl;
             return MeshError::READ;
         }
-        vertices.push_back(Vertex(x, y, z));
+
+        int newPointIndex = insert(x, y, z);
+        if (newPointIndex == -1) {
+            std::cerr << "Failed to insert point " << i << ": (" << x << ", " << y << ", " << z << ")\n";
+        }
     }
 
+    std::cout << "Points inserted, removing super-triangle..." << std::endl;
+    removeSuperTriangle();
+    sew();
     computeNormals();
 
+    std::cout << "Final mesh: " << vertices.size() << " vertices, " << faces.size() << " faces" << std::endl;
+
+    saveOFF("/home/yanisse/Documents/test.off");
     return MeshError::OK;
 }
+
+void Mesh::saveOFF(const char* file) const {
+    std::ofstream meshFile;
+    meshFile.open(file);
+    if(!meshFile.is_open()) {
+        std::cerr << "Can't open file \"" << file << "\"\n";
+        exit(EXIT_FAILURE);
+    }
+
+    meshFile << "OFF" << std::endl;
+    meshFile << vertices.size() << " " << faces.size() << " " << 0 << std::endl;
+
+    for(auto& v : vertices) {
+        meshFile << v.position.x() << " " << v.position.y() << " " << v.position.z() << std::endl;
+    }
+
+    for(auto&f : faces) {
+        meshFile << 3 << " " << f.idVertices[0] << " " << f.idVertices[1] << " " << f.idVertices[2] << std::endl;
+    }
+
+}
+
 
 float Mesh::faceArea(int faceIndex) const {
     QVector3D a = vertices[faces[faceIndex].idVertices[0]].position;
@@ -310,3 +367,475 @@ float Mesh::getBoundingRadius() const {
     }
     return maxDist;
 }
+
+void Mesh::removeSuperTriangle() {
+    const int superVertex1 = 0;
+    const int superVertex2 = 1;
+    const int superVertex3 = 2;
+
+    std::vector<Triangle> validFaces;
+    validFaces.reserve(faces.size());
+
+    for (const Triangle& face : faces) {
+        bool containsSuperVertex = false;
+
+        for (int i = 0; i < 3; i++) {
+            int vertexId = face.idVertices[i];
+            if (vertexId == superVertex1 || vertexId == superVertex2 || vertexId == superVertex3) {
+                containsSuperVertex = true;
+                break;
+            }
+        }
+
+        if (!containsSuperVertex) {
+            validFaces.push_back(face);
+        }
+    }
+
+    vertices.erase(vertices.begin(), vertices.begin() + 3);
+
+    for (Triangle& face : validFaces) {
+        for (int i = 0; i < 3; i++) {
+            if (face.idVertices[i] >= 3) {
+                face.idVertices[i] -= 3;
+            } else {
+                std::cerr << "Error: Triangle still references super-triangle vertex!\n";
+            }
+        }
+
+        face.idFaces.clear();
+    }
+
+    faces = std::move(validFaces);
+}
+
+void Mesh::triangleSplit(int p, int triIndex) {
+    if (triIndex<0 || triIndex>=faces.size() || p<0 || p>=vertices.size()) return;
+    auto tri = faces[triIndex];
+    int u = tri.idVertices[0];
+    int v = tri.idVertices[1];
+    int w = tri.idVertices[2];
+
+    faces[triIndex] = Triangle(u,v,p);
+    faces.push_back(Triangle(v,w,p));
+    faces.push_back(Triangle(w,u,p));
+
+    sew();
+    computeNormals();
+}
+
+void Mesh::edgeFlip(int t1, int t2) {
+    if (t1<0 || t1>=faces.size() || t2<0 || t2>=faces.size()) return;
+    auto tri1 = faces[t1];
+    auto tri2 = faces[t2];
+
+    std::pair<int, int> commonEdge = tri1.findCommonEdge(tri2);
+    if (commonEdge.first == -1 || commonEdge.second == -1) {
+        std::cerr << "Common edge not found\n";
+        return;
+    }
+
+    int b = commonEdge.first;
+    int c = commonEdge.second;
+
+    int cLocal = tri1.localIndex(c);
+    int cLocal_t2 = tri2.localIndex(b);
+
+    int aLocal = (cLocal + 1) % 3;
+    int dLocal = (cLocal_t2 + 1) % 3;
+
+
+    faces[t1].idVertices[cLocal] = tri2.idVertices[dLocal];
+    faces[t2].idVertices[cLocal_t2] = tri1.idVertices[aLocal];
+
+    sew();
+    computeNormals();
+
+}
+
+void Mesh::edgeSplit(int p, int t1, int t2) {
+    if (t1<0 || t1>=faces.size() || t2<0 || t2>=faces.size() || p<0 || p>=vertices.size()) return;
+
+    auto tri1 = faces[t1];
+    auto tri2 = faces[t2];
+
+    std::pair<int, int> commonEdge = tri1.findCommonEdge(tri2);
+    if (commonEdge.first == -1 || commonEdge.second == -1) {
+        std::cerr << "Common edge not found\n";
+        return;
+    }
+
+    int b = commonEdge.first;
+    int c = commonEdge.second;
+
+    int a = -1;
+    int d = -1;
+
+    for (int i = 0; i < 3; i++) {
+        if (tri1.idVertices[i] != b && tri1.idVertices[i] != c) {
+            a = tri1.idVertices[i];
+            break;
+        }
+    }
+
+    for (int i = 0; i < 3; i++) {
+        if (tri2.idVertices[i] != b && tri2.idVertices[i] != c) {
+            d = tri2.idVertices[i];
+            break;
+        }
+    }
+
+    if (a == -1 || d == -1) return;
+
+    faces[t1] = Triangle(a, b, p);
+    faces[t2] = Triangle(b, p, d);
+
+    faces.push_back(Triangle(a, p, c));
+    faces.push_back(Triangle(p, c, d));
+
+    sew();
+    computeNormals();
+}
+
+float Mesh::orientationTest(int p, int q, int r) const {
+    if (p < 0 || p >= vertices.size() || q < 0 || q >= vertices.size() || r < 0 || r >= vertices.size()) {
+        return 0.0f;
+    }
+
+    QVector3D P = vertices[p].position;
+    QVector3D Q = vertices[q].position;
+    QVector3D R = vertices[r].position;
+
+    float orientation = (Q.x() - P.x()) * (R.y() - P.y()) - (Q.y() - P.y()) * (R.x() - P.x());
+
+    return orientation;
+}
+
+int Mesh::pointInTriangle(int p, int triIndex) const {
+    if (triIndex < 0 || triIndex >= faces.size() || p < 0 || p >= vertices.size()) {
+        return -1;
+    }
+
+    const Triangle& tri = faces[triIndex];
+    int a = tri.idVertices[0];
+    int b = tri.idVertices[1];
+    int c = tri.idVertices[2];
+
+    float o1 = orientationTest(a, b, p);
+    float o2 = orientationTest(b, c, p);
+    float o3 = orientationTest(c, a, p);
+
+    bool allPositive = (o1 >= 0 && o2 >= 0 && o3 >= 0);
+    bool allNegative = (o1 <= 0 && o2 <= 0 && o3 <= 0);
+
+    if (allPositive || allNegative) {
+        if (o1 == 0.0f || o2 == 0.0f || o3 == 0.0f) {
+            return 0;
+        }
+        return 1;
+    }
+
+    return -1;
+}
+
+int Mesh::insert(float x, float y, float z) {
+    vertices.push_back(QVector3D(x, y, z));
+    int pIndex = vertices.size() - 1;
+
+    int containingTriangle = -1;
+    for (int i = 0; i < (int)faces.size(); i++) {
+        int result = pointInTriangle(pIndex, i);
+        if (result >= 0) {
+            containingTriangle = i;
+            break;
+        }
+    }
+
+    if (containingTriangle == -1) {
+        std::cerr << "Warning: Point (" << x << ", " << y << ", " << z
+                  << ") not inside any triangle during insertion\n";
+        vertices.pop_back();
+        return -1;
+    }
+
+    triangleSplit(pIndex, containingTriangle);
+    lawsonLocalUpdate(pIndex);
+
+    return pIndex;
+}
+
+
+bool Mesh::isInCircumcircleNorm(int a, int b, int c, int d) const {
+    if (a < 0 || a >= vertices.size() || b < 0 || b >= vertices.size() ||
+        c < 0 || c >= vertices.size() || d < 0 || d >= vertices.size()) {
+        return false;
+    }
+
+    float ax = vertices[a].position.x(), ay = vertices[a].position.y();
+    float bx = vertices[b].position.x(), by = vertices[b].position.y();
+    float cx = vertices[c].position.x(), cy = vertices[c].position.y();
+    float dx = vertices[d].position.x(), dy = vertices[d].position.y();
+
+    float adx = ax - dx, ady = ay - dy;
+    float bdx = bx - dx, bdy = by - dy;
+    float cdx = cx - dx, cdy = cy - dy;
+
+    float det = adx * (bdy * (cdx*cdx + cdy*cdy) - (bdx*bdx + bdy*bdy) * cdy) -
+                ady * (bdx * (cdx*cdx + cdy*cdy) - (bdx*bdx + bdy*bdy) * cdx) +
+                (adx*adx + ady*ady) * (bdx * cdy - bdy * cdx);
+
+    return det > 0;
+}
+
+bool Mesh::isLocallyDelaunay(int t1, int t2) const {
+    if (t1 < 0 || t1 >= faces.size() || t2 < 0 || t2 >= faces.size() || t1 == t2) {
+        return true;
+    }
+
+    const Triangle& tri1 = faces[t1];
+    const Triangle& tri2 = faces[t2];
+
+    std::pair<int, int> commonEdge = tri1.findCommonEdge(tri2);
+    if (commonEdge.first == -1 || commonEdge.second == -1) {
+        return true;
+    }
+
+    int a = commonEdge.first;
+    int b = commonEdge.second;
+
+    int c = -1;
+    for (int i = 0; i < 3; i++) {
+        int vertex = tri1.idVertices[i];
+        if (vertex != a && vertex != b) {
+            c = vertex;
+            break;
+        }
+    }
+
+    int d = -1;
+    for (int i = 0; i < 3; i++) {
+        int vertex = tri2.idVertices[i];
+        if (vertex != a && vertex != b) {
+            d = vertex;
+            break;
+        }
+    }
+
+    if (c == -1 || d == -1) {
+        return true;
+    }
+
+    return !isInCircumcircleNorm(a, b, c, d);
+}
+
+void Mesh::lawsonAlgorithm() {
+    std::queue<std::pair<int, int>> edgeQueue;
+    std::set<std::pair<int, int>> processed;
+    int maxIterations = faces.size() * faces.size();
+    int iterations = 0;
+
+    for (int i = 0; i < (int)faces.size(); i++) {
+        for (int j : faces[i].idFaces) {
+            if (i < j) {
+                edgeQueue.push({i, j});
+            }
+        }
+    }
+
+    while (!edgeQueue.empty() && iterations < maxIterations) {
+        iterations++;
+
+        auto [t1, t2] = edgeQueue.front();
+        edgeQueue.pop();
+
+        if (t1 >= (int)faces.size() || t2 >= (int)faces.size()) continue;
+
+        std::pair<int, int> edgePair = {std::min(t1, t2), std::max(t1, t2)};
+        if (processed.find(edgePair) != processed.end()) continue;
+        processed.insert(edgePair);
+
+        if (!isLocallyDelaunay(t1, t2)) {
+            std::vector<unsigned int> oldNeighbors_t1 = faces[t1].idFaces;
+            std::vector<unsigned int> oldNeighbors_t2 = faces[t2].idFaces;
+
+            edgeFlip(t1, t2);
+
+            for (int neighbor : faces[t1].idFaces) {
+                if (neighbor != t2) {
+                    std::pair<int, int> newEdge = {std::min(t1, neighbor), std::max(t1, neighbor)};
+                    if (processed.find(newEdge) == processed.end()) {
+                        edgeQueue.push({t1, neighbor});
+                    }
+                }
+            }
+
+            for (int neighbor : faces[t2].idFaces) {
+                if (neighbor != t1) {
+                    std::pair<int, int> newEdge = {std::min(t2, neighbor), std::max(t2, neighbor)};
+                    if (processed.find(newEdge) == processed.end()) {
+                        edgeQueue.push({t2, neighbor});
+                    }
+                }
+            }
+
+            processed.clear();
+        }
+    }
+
+    if (iterations >= maxIterations) {
+        std::cerr << "Lawson algorithm reached maximum iterations limit\n";
+    }
+
+    sew();
+    computeNormals();
+}
+
+void Mesh::lawsonLocalUpdate(int p) {
+    if (p < 0 || p >= (int)vertices.size()) return;
+
+    std::queue<std::pair<int, int>> edgeQueue;
+    std::set<std::pair<int, int>> processed;
+    int maxIterations = 100;
+    int iterations = 0;
+
+    std::vector<int> incidentTriangles;
+    for (int i = 0; i < (int)faces.size(); i++) {
+        const Triangle& tri = faces[i];
+        for (int j = 0; j < 3; j++) {
+            if (tri.idVertices[j] == p) {
+                incidentTriangles.push_back(i);
+                break;
+            }
+        }
+    }
+
+    for (int triIndex : incidentTriangles) {
+        const Triangle& tri = faces[triIndex];
+
+        int oppositeVertex1 = -1, oppositeVertex2 = -1;
+        for (int j = 0; j < 3; j++) {
+            if (tri.idVertices[j] != p) {
+                if (oppositeVertex1 == -1) {
+                    oppositeVertex1 = tri.idVertices[j];
+                } else {
+                    oppositeVertex2 = tri.idVertices[j];
+                    break;
+                }
+            }
+        }
+
+        for (int adjTriIndex : faces[triIndex].idFaces) {
+            if (adjTriIndex != triIndex) {
+                const Triangle& adjTri = faces[adjTriIndex];
+                bool sharesOppositeEdge = false;
+                int sharedCount = 0;
+
+                for (int k = 0; k < 3; k++) {
+                    int adjVertex = adjTri.idVertices[k];
+                    if (adjVertex == oppositeVertex1 || adjVertex == oppositeVertex2) {
+                        sharedCount++;
+                    }
+                }
+
+                if (sharedCount == 2) {
+                    std::pair<int, int> edgePair = {std::min(triIndex, adjTriIndex),
+                                                    std::max(triIndex, adjTriIndex)};
+                    if (processed.find(edgePair) == processed.end()) {
+                        edgeQueue.push({triIndex, adjTriIndex});
+                    }
+                }
+            }
+        }
+    }
+
+    while (!edgeQueue.empty() && iterations < maxIterations) {
+        iterations++;
+
+        auto [t1, t2] = edgeQueue.front();
+        edgeQueue.pop();
+
+        if (t1 >= (int)faces.size() || t2 >= (int)faces.size()) continue;
+
+        std::pair<int, int> edgePair = {std::min(t1, t2), std::max(t1, t2)};
+        if (processed.find(edgePair) != processed.end()) continue;
+        processed.insert(edgePair);
+
+        if (!isLocallyDelaunay(t1, t2)) {
+
+            edgeFlip(t1, t2);
+
+            for (int neighbor : faces[t1].idFaces) {
+                if (neighbor != t2) {
+                    bool inInfluenceZone = false;
+                    const Triangle& neighborTri = faces[neighbor];
+                    for (int k = 0; k < 3; k++) {
+                        if (neighborTri.idVertices[k] == p) {
+                            inInfluenceZone = true;
+                            break;
+                        }
+                    }
+
+                    if (!inInfluenceZone) {
+                        for (int incidentTri : incidentTriangles) {
+                            if (incidentTri < (int)faces.size()) {
+                                for (int adj : faces[incidentTri].idFaces) {
+                                    if (adj == neighbor) {
+                                        inInfluenceZone = true;
+                                        break;
+                                    }
+                                }
+                                if (inInfluenceZone) break;
+                            }
+                        }
+                    }
+
+                    if (inInfluenceZone) {
+                        std::pair<int, int> newEdge = {std::min(t1, neighbor), std::max(t1, neighbor)};
+                        if (processed.find(newEdge) == processed.end()) {
+                            edgeQueue.push({t1, neighbor});
+                        }
+                    }
+                }
+            }
+
+            for (int neighbor : faces[t2].idFaces) {
+                if (neighbor != t1) {
+                    bool inInfluenceZone = false;
+                    const Triangle& neighborTri = faces[neighbor];
+                    for (int k = 0; k < 3; k++) {
+                        if (neighborTri.idVertices[k] == p) {
+                            inInfluenceZone = true;
+                            break;
+                        }
+                    }
+
+                    if (!inInfluenceZone) {
+                        for (int incidentTri : incidentTriangles) {
+                            if (incidentTri < (int)faces.size()) {
+                                for (int adj : faces[incidentTri].idFaces) {
+                                    if (adj == neighbor) {
+                                        inInfluenceZone = true;
+                                        break;
+                                    }
+                                }
+                                if (inInfluenceZone) break;
+                            }
+                        }
+                    }
+
+                    if (inInfluenceZone) {
+                        std::pair<int, int> newEdge = {std::min(t2, neighbor), std::max(t2, neighbor)};
+                        if (processed.find(newEdge) == processed.end()) {
+                            edgeQueue.push({t2, neighbor});
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (iterations >= maxIterations) {
+        std::cerr << "Local Lawson update reached iteration limit for point " << p << "\n";
+    }
+}
+

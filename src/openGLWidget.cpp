@@ -20,6 +20,7 @@ int OpenGLWidget::loadMesh(const char *link) {
     }
     QVector3D center = mesh.getCenter();
     float radius = mesh.getBoundingRadius();
+    qDebug() << center << "  " << radius << "\n";
     camera.initialize(center, radius);
 
     updateMeshBuffers();
@@ -84,6 +85,8 @@ void OpenGLWidget::initializeGL() {
     shaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, shaderDir + "vertex.glsl");
     shaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, shaderDir + "fragment.glsl");
     shaderProgram->link();
+
+    updateMeshBuffers();
 
     emit verticesChanged(0);
     emit trianglesChanged(0);

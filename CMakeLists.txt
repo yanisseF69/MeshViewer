@@ -25,6 +25,7 @@ set(SOURCES
     src/vertex.cpp
     src/triangle.cpp
     src/mesh.cpp
+    src/edgeKeyHash.cpp
 )
 
 set(HEADERS
@@ -35,12 +36,13 @@ set(HEADERS
     include/triangle.h
     include/mesh.h
     include/config.h
+    include/config.h.in
+    include/edgeKeyHash.h
 )
 
 
 qt_add_executable(MeshViewer WIN32 MACOSX_BUNDLE
     ${SOURCES} ${HEADERS}
-    include/config.h.in
 )
 
 target_include_directories(MeshViewer
