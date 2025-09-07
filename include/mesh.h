@@ -68,12 +68,8 @@ public:
 
     void saveOFF(const char* file) const;
 
-
     QVector3D getCenter() const;
     float getBoundingRadius() const;
-
-
-
 
     void normalize();
 
