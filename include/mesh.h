@@ -68,11 +68,18 @@ public:
 
     void saveOFF(const char* file) const;
 
-    float faceArea(int faceIndex) const;
-    void computeNormals();
+
     QVector3D getCenter() const;
     float getBoundingRadius() const;
-    void removeSuperTriangle();
+
+
+
+
+    void normalize();
+
+private:
+    float faceArea(int faceIndex) const;
+    void computeNormals();
 
     void triangleSplit(int p, int triIndex);
     void edgeFlip(int t1, int t2);
@@ -85,8 +92,7 @@ public:
 
     void lawsonAlgorithm();
     void lawsonLocalUpdate(int p);
-
-private:
+    void removeSuperTriangle();
 
     std::vector<Vertex> vertices;
     std::vector<Triangle> faces;

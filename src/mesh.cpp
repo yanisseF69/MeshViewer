@@ -220,6 +220,7 @@ int Mesh::loadOBJ(const char* link) {
     }
 
     sew();
+    computeNormals();
 
     return MeshError::OK;
 }
@@ -279,10 +280,8 @@ int Mesh::loadTXT(const char* link) {
     removeSuperTriangle();
     sew();
     computeNormals();
-
     std::cout << "Final mesh: " << vertices.size() << " vertices, " << faces.size() << " faces" << std::endl;
 
-    saveOFF("/home/yanisse/Documents/test.off");
     return MeshError::OK;
 }
 
@@ -839,3 +838,14 @@ void Mesh::lawsonLocalUpdate(int p) {
     }
 }
 
+void Mesh::normalize() {
+    QVector3D center = getCenter();
+    float radius = getBoundingRadius();
+    float scale = 10.0f / radius;
+
+    for (auto& vertex : vertices) {
+        vertex.position = (vertex.position - center) * scale;
+    }
+
+    computeNormals();
+}

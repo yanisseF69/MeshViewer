@@ -18,9 +18,14 @@ int OpenGLWidget::loadMesh(const char *link) {
     if (ok > 0) {
         mesh.clear();
     }
-    QVector3D center = mesh.getCenter();
+
     float radius = mesh.getBoundingRadius();
-    qDebug() << center << "  " << radius << "\n";
+    if (radius > 100.0f) {
+        mesh.normalize();
+        radius = 10.0f;
+    }
+    QVector3D center = mesh.getCenter();
+
     camera.initialize(center, radius);
 
     updateMeshBuffers();
@@ -85,8 +90,6 @@ void OpenGLWidget::initializeGL() {
     shaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, shaderDir + "vertex.glsl");
     shaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, shaderDir + "fragment.glsl");
     shaderProgram->link();
-
-    updateMeshBuffers();
 
     emit verticesChanged(0);
     emit trianglesChanged(0);
