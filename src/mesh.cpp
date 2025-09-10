@@ -6,7 +6,6 @@
 #include <sstream>
 #include <exception>
 #include <set>
-#include <stack>
 #include <queue>
 
 Mesh::Mesh() {}
@@ -220,7 +219,7 @@ int Mesh::loadOBJ(const char* link) {
     }
 
     sew();
-    computeNormals();
+    if (tempNormals.empty()) computeNormals();
 
     return MeshError::OK;
 }
@@ -255,18 +254,12 @@ int Mesh::loadTXT(const char* link) {
     }
 
     clear();
-    vertices.push_back(QVector3D(-100000.0f, -100000.0f, 0.0f));
-    vertices.push_back(QVector3D(100000.0f, -100000.0f, 0.0f));
-    vertices.push_back(QVector3D(0.0f, 100000.0f, 0.0f));
-    faces.push_back(Triangle(0, 1, 2));
-    sew();
 
-    std::cout << "Inserting " << numVertices << " points..." << std::endl;
+    initializeSuperTriangle();
 
     for (size_t i = 0; i < numVertices; ++i) {
         float x, y, z;
         if (!(meshFile >> x >> y >> z)) {
-            std::cerr << "Error reading point " << i << std::endl;
             return MeshError::READ;
         }
 
@@ -276,21 +269,38 @@ int Mesh::loadTXT(const char* link) {
         }
     }
 
-    std::cout << "Points inserted, removing super-triangle..." << std::endl;
     removeSuperTriangle();
     sew();
     computeNormals();
-    std::cout << "Final mesh: " << vertices.size() << " vertices, " << faces.size() << " faces" << std::endl;
 
     return MeshError::OK;
 }
 
-void Mesh::saveOFF(const char* file) const {
+int Mesh::saveFile(const char *link) const {
+    std::string filename(link);
+    std::transform(filename.begin(), filename.end(), filename.begin(), ::tolower);
+    int ok;
+
+    if (filename.size() >= 4 && filename.substr(filename.size() - 4) == ".off") {
+        ok = saveOFF(link);
+        return ok;
+    } else if (filename.size() >= 4 && filename.substr(filename.size() - 4) == ".obj") {
+        // ok = saveOBJ(link);
+        return ok;
+    } else if (filename.size() >= 4 && filename.substr(filename.size() - 4) == ".txt") {
+        // ok = saveTXT(link);
+        return ok;
+    } else {
+        return MeshError::FORMAT;
+    }
+}
+
+int Mesh::saveOFF(const char* link) const {
     std::ofstream meshFile;
-    meshFile.open(file);
+    meshFile.open(link);
     if(!meshFile.is_open()) {
-        std::cerr << "Can't open file \"" << file << "\"\n";
-        exit(EXIT_FAILURE);
+        std::cerr << "Can't open file \"" << link << "\"\n";
+        return MeshError::SAVE;
     }
 
     meshFile << "OFF" << std::endl;
@@ -304,8 +314,23 @@ void Mesh::saveOFF(const char* file) const {
         meshFile << 3 << " " << f.idVertices[0] << " " << f.idVertices[1] << " " << f.idVertices[2] << std::endl;
     }
 
+    return MeshError::OK;
 }
 
+int Mesh::findNeighbor(unsigned int triIndex, unsigned int a, unsigned int b) const {
+    int res = -1;
+
+    for (int i: faces[triIndex].idFaces) {
+        const Triangle &t = faces[i];
+        if ((a == t.idVertices[1] && b == t.idVertices[0]) ||
+            (a == t.idVertices[2] && b == t.idVertices[1]) ||
+            (a == t.idVertices[0] && b == t.idVertices[2])) {
+            res = i;
+            break;
+        }
+    }
+    return res;
+}
 
 float Mesh::faceArea(int faceIndex) const {
     QVector3D a = vertices[faces[faceIndex].idVertices[0]].position;
@@ -367,6 +392,13 @@ float Mesh::getBoundingRadius() const {
     return maxDist;
 }
 
+void Mesh::initializeSuperTriangle() {
+    vertices.push_back(QVector3D(-100000.0f, -100000.0f, 0.0f));
+    vertices.push_back(QVector3D(100000.0f, -100000.0f, 0.0f));
+    vertices.push_back(QVector3D(0.0f, 100000.0f, 0.0f));
+    faces.push_back(Triangle(0, 1, 2));
+}
+
 void Mesh::removeSuperTriangle() {
     const int superVertex1 = 0;
     const int superVertex2 = 1;
@@ -410,17 +442,46 @@ void Mesh::removeSuperTriangle() {
 
 void Mesh::triangleSplit(int p, int triIndex) {
     if (triIndex<0 || triIndex>=faces.size() || p<0 || p>=vertices.size()) return;
-    auto tri = faces[triIndex];
+    Triangle tri = faces[triIndex];
     int u = tri.idVertices[0];
     int v = tri.idVertices[1];
     int w = tri.idVertices[2];
 
+    int nei1Index = findNeighbor(triIndex, u, v);
+    int nei2Index = findNeighbor(triIndex, v, w);
+    int nei3Index = findNeighbor(triIndex, w, u);
+
     faces[triIndex] = Triangle(u,v,p);
     faces.push_back(Triangle(v,w,p));
     faces.push_back(Triangle(w,u,p));
+    int tri2Index = faces.size() - 2;
+    int tri3Index = faces.size() - 1;
 
-    sew();
-    computeNormals();
+    if (nei1Index != -1) faces[triIndex].idFaces.push_back(nei1Index);
+
+    if (nei2Index != -1) {
+        auto& nei2 = faces[nei2Index].idFaces;
+        auto it = std::find(nei2.begin(), nei2.end(), triIndex);
+        if (it != nei2.end()) nei2.erase(it);
+        nei2.push_back(tri2Index);
+        faces[tri2Index].idFaces.push_back(nei2Index);
+    }
+
+    if (nei3Index != -1) {
+        auto& nei3 = faces[nei3Index].idFaces;
+        auto it = std::find(nei3.begin(), nei3.end(), triIndex);
+        if (it != nei3.end()) nei3.erase(it);
+        nei3.push_back(tri3Index);
+        faces[tri3Index].idFaces.push_back(nei3Index);
+    }
+
+    faces[triIndex].idFaces.push_back(tri2Index);
+    faces[triIndex].idFaces.push_back(tri3Index);
+    faces[tri2Index].idFaces.push_back(triIndex);
+    faces[tri2Index].idFaces.push_back(tri3Index);
+    faces[tri3Index].idFaces.push_back(triIndex);
+    faces[tri3Index].idFaces.push_back(tri2Index);
+
 }
 
 void Mesh::edgeFlip(int t1, int t2) {
@@ -447,9 +508,24 @@ void Mesh::edgeFlip(int t1, int t2) {
     faces[t1].idVertices[cLocal] = tri2.idVertices[dLocal];
     faces[t2].idVertices[cLocal_t2] = tri1.idVertices[aLocal];
 
-    sew();
-    computeNormals();
+    int nei1To2Index = findNeighbor(t1, c, faces[t1].idVertices[aLocal]);
+    int nei2To1Index = findNeighbor(t2, b, faces[t2].idVertices[dLocal]);
 
+    if (nei1To2Index != -1) {
+        auto& nei1To2 = faces[nei1To2Index].idFaces;
+        auto it = std::find(nei1To2.begin(), nei1To2.end(), t1);
+        if (it != nei1To2.end()) nei1To2.erase(it);
+        nei1To2.push_back(t2);
+        faces[t2].idFaces.push_back(nei1To2Index);
+    }
+
+    if (nei2To1Index != -1) {
+        auto& nei2To1 = faces[nei2To1Index].idFaces;
+        auto it = std::find(nei2To1.begin(), nei2To1.end(), t2);
+        if (it != nei2To1.end()) nei2To1.erase(it);
+        nei2To1.push_back(t1);
+        faces[t1].idFaces.push_back(nei2To1Index);
+    }
 }
 
 void Mesh::edgeSplit(int p, int t1, int t2) {
@@ -685,8 +761,8 @@ void Mesh::lawsonAlgorithm() {
         std::cerr << "Lawson algorithm reached maximum iterations limit\n";
     }
 
-    sew();
-    computeNormals();
+    // sew();
+    // computeNormals();
 }
 
 void Mesh::lawsonLocalUpdate(int p) {
@@ -798,7 +874,7 @@ void Mesh::lawsonLocalUpdate(int p) {
             }
 
             for (int neighbor : faces[t2].idFaces) {
-                if (neighbor != t1) {
+                if (neighbor != t1 && neighbor > 0) {
                     bool inInfluenceZone = false;
                     const Triangle& neighborTri = faces[neighbor];
                     for (int k = 0; k < 3; k++) {

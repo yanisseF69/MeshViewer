@@ -14,6 +14,7 @@ enum MeshError {
     OK=0,
     FORMAT=1,
     READ=2,
+    SAVE=3,
     UNKNOWN
 };
 
@@ -66,7 +67,8 @@ public:
      */
     int loadTXT(const char* link);
 
-    void saveOFF(const char* file) const;
+    int saveFile(const char* link) const;
+    int saveOFF(const char* link) const;
 
     QVector3D getCenter() const;
     float getBoundingRadius() const;
@@ -74,6 +76,8 @@ public:
     void normalize();
 
 private:
+
+    int findNeighbor(unsigned int triIndex, unsigned int a, unsigned int b) const;
     float faceArea(int faceIndex) const;
     void computeNormals();
 
@@ -88,6 +92,8 @@ private:
 
     void lawsonAlgorithm();
     void lawsonLocalUpdate(int p);
+
+    void initializeSuperTriangle();
     void removeSuperTriangle();
 
     std::vector<Vertex> vertices;

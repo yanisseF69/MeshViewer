@@ -70,7 +70,7 @@ void Camera::setAngleY(float y) {
 
 void Camera::initialize(QVector3D center, float radius) {
     setTarget(center);
-    QVector3D initPos = center + QVector3D(0, 0, radius * 2.0 + 1);
+    QVector3D initPos = center + QVector3D(0, 0, radius * 2.0f + 1);
     setPosition(initPos);
     distance = (initPos - center).length();
     setAngleX(0);

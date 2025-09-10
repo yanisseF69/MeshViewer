@@ -32,6 +32,11 @@ int OpenGLWidget::loadMesh(const char *link) {
     return ok;
 }
 
+int OpenGLWidget::saveMesh(const char *link) const {
+    int ok = mesh.saveFile(link);
+    return ok;
+}
+
 
 void OpenGLWidget::updateMeshBuffers() {
     makeCurrent();
@@ -90,6 +95,8 @@ void OpenGLWidget::initializeGL() {
     shaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, shaderDir + "vertex.glsl");
     shaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, shaderDir + "fragment.glsl");
     shaderProgram->link();
+
+    updateMeshBuffers();
 
     emit verticesChanged(0);
     emit trianglesChanged(0);

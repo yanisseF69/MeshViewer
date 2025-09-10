@@ -2,6 +2,7 @@
 #define TRIANGLE_H
 
 #include <vector>
+#include <array>
 
 struct Triangle
 {
@@ -12,7 +13,7 @@ struct Triangle
     int localIndex(unsigned int indice) const;
     std::pair<int, int> findCommonEdge(const Triangle &t) const;
 
-    unsigned int idVertices[3];
+    std::array<unsigned int, 3> idVertices;
     std::vector<unsigned int> idFaces;
 };
 

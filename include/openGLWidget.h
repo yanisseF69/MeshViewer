@@ -23,6 +23,7 @@ public:
     ~OpenGLWidget();
 
     int loadMesh(const char* link);
+    int saveMesh(const char* link) const;
     void updateMeshBuffers();
 
 public slots:

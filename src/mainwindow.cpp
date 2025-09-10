@@ -73,3 +73,14 @@ void MainWindow::onActionLoad() {
         }
     }
 }
+
+void MainWindow::onActionSave() {
+    QString filename = QFileDialog::getSaveFileName(
+        this,
+        tr("Save mesh file"),
+        QString(),
+        tr("Mesh file (*.txt *.obj *.off);;All files (*.*)")
+        );
+
+    int ok = ui->openGLWidget->saveMesh(filename.toStdString().c_str());
+}

@@ -23,6 +23,7 @@ public:
     ~MainWindow();
 
     void onActionLoad();
+    void onActionSave();
 
 private:
     Ui::MainWindow *ui;
