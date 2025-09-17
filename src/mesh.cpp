@@ -288,7 +288,7 @@ int Mesh::saveFile(const char *link) const {
         // ok = saveOBJ(link);
         return ok;
     } else if (filename.size() >= 4 && filename.substr(filename.size() - 4) == ".txt") {
-        // ok = saveTXT(link);
+        ok = saveTXT(link);
         return ok;
     } else {
         return MeshError::FORMAT;
@@ -312,6 +312,34 @@ int Mesh::saveOFF(const char* link) const {
 
     for(auto&f : faces) {
         meshFile << 3 << " " << f.idVertices[0] << " " << f.idVertices[1] << " " << f.idVertices[2] << std::endl;
+    }
+
+    return MeshError::OK;
+}
+
+int Mesh::saveOBJ(const char *link) const {
+    std::ofstream meshFile;
+    meshFile.open(link);
+    if(!meshFile.is_open()) {
+        std::cerr << "Can't open file \"" << link << "\"\n";
+        return MeshError::SAVE;
+    }
+
+    return MeshError::UNKNOWN;
+}
+
+int Mesh::saveTXT(const char *link) const {
+    std::ofstream meshFile;
+    meshFile.open(link);
+    if(!meshFile.is_open()) {
+        std::cerr << "Can't open file \"" << link << "\"\n";
+        return MeshError::SAVE;
+    }
+
+    meshFile << vertices.size() << std::endl;
+
+    for (auto &v : vertices) {
+        meshFile << v.position.x() << " " << v.position.y() << " " << v.position.z() << std::endl;
     }
 
     return MeshError::OK;
@@ -600,8 +628,10 @@ int Mesh::pointInTriangle(int p, int triIndex) const {
     float o2 = orientationTest(b, c, p);
     float o3 = orientationTest(c, a, p);
 
-    bool allPositive = (o1 >= 0 && o2 >= 0 && o3 >= 0);
-    bool allNegative = (o1 <= 0 && o2 <= 0 && o3 <= 0);
+    float epsilon = std::numeric_limits<float>::epsilon();
+
+    bool allPositive = (o1 >= epsilon && o2 >= epsilon && o3 >= epsilon);
+    bool allNegative = (o1 <= epsilon && o2 <= epsilon && o3 <= epsilon);
 
     if (allPositive || allNegative) {
         if (o1 == 0.0f || o2 == 0.0f || o3 == 0.0f) {
@@ -659,7 +689,9 @@ bool Mesh::isInCircumcircleNorm(int a, int b, int c, int d) const {
                 ady * (bdx * (cdx*cdx + cdy*cdy) - (bdx*bdx + bdy*bdy) * cdx) +
                 (adx*adx + ady*ady) * (bdx * cdy - bdy * cdx);
 
-    return det > 0;
+    float epsilon = std::numeric_limits<float>::epsilon();
+
+    return det > epsilon;
 }
 
 bool Mesh::isLocallyDelaunay(int t1, int t2) const {
@@ -917,7 +949,7 @@ void Mesh::lawsonLocalUpdate(int p) {
 void Mesh::normalize() {
     QVector3D center = getCenter();
     float radius = getBoundingRadius();
-    float scale = 10.0f / radius;
+    float scale = 30.0f / radius;
 
     for (auto& vertex : vertices) {
         vertex.position = (vertex.position - center) * scale;

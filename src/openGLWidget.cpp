@@ -22,7 +22,7 @@ int OpenGLWidget::loadMesh(const char *link) {
     float radius = mesh.getBoundingRadius();
     if (radius > 100.0f) {
         mesh.normalize();
-        radius = 10.0f;
+        radius = 30.0f;
     }
     QVector3D center = mesh.getCenter();
 
@@ -95,8 +95,6 @@ void OpenGLWidget::initializeGL() {
     shaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, shaderDir + "vertex.glsl");
     shaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, shaderDir + "fragment.glsl");
     shaderProgram->link();
-
-    updateMeshBuffers();
 
     emit verticesChanged(0);
     emit trianglesChanged(0);

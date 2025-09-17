@@ -23,9 +23,12 @@ public:
     ~MainWindow();
 
     void onActionLoad();
-    void onActionSave();
+    void onSaveClicked();
 
 private:
+
+    void handleMeshError(int err);
+
     Ui::MainWindow *ui;
     QTimer *errorTimer;
 };
