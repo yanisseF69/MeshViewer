@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['edgekeyhash_0',['EdgeKeyHash',['../structEdgeKeyHash.html',1,'']]]
+  ['b_0',['B',['../classB.html',1,'']]]
 ];

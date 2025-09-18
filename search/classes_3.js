@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['openglwidget_0',['OpenGLWidget',['../classOpenGLWidget.html',1,'']]]
+  ['d_0',['D',['../classD.html',1,'']]]
 ];
