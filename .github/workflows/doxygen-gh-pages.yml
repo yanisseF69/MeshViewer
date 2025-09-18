@@ -4,26 +4,17 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: write
     steps:
-    - name: Get the source code
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-
-    - name: Doxygen and Graphviz installation
-      run: sudo apt-get update && sudo apt-get install -y doxygen graphviz
-
-    - name: Generate the documentation
-      run: doxygen Doxyfile
-
-    - name: Publish on GitHub Pages (gh-pages branch)
-      uses: peaceiris/actions-gh-pages@v4
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./doc/html
-        clean: true
+      - uses: DenverCoder1/doxygen-github-pages-action@v2.0.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
+          folder: doc/html
+          config_file: Doxyfile
