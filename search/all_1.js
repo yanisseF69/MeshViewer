@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['edgekeyhash_0',['EdgeKeyHash',['../structEdgeKeyHash.html',1,'']]]
+  ['denormalize_0',['deNormalize',['../classMesh.html#a169c28de22cdaa05e9bca7b514406397',1,'Mesh']]]
 ];

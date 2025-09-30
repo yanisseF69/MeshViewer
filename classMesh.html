@@ -109,6 +109,9 @@ const std::vector&lt; <a class="el" href="structVertex.html">Vertex</a> &gt; &am
 <tr class="memitem:a603d541bcbadf8bbfd2627619660ebb0"><td class="memItemLeft" align="right" valign="top"><a id="a603d541bcbadf8bbfd2627619660ebb0" name="a603d541bcbadf8bbfd2627619660ebb0"></a>
 const std::vector&lt; unsigned int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getIndices</b> () const</td></tr>
 <tr class="separator:a603d541bcbadf8bbfd2627619660ebb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbe67d58ecf05ce5e0ffe483a8ced7e3"><td class="memItemLeft" align="right" valign="top"><a id="abbe67d58ecf05ce5e0ffe483a8ced7e3" name="abbe67d58ecf05ce5e0ffe483a8ced7e3"></a>
+const bool &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>hasTexture</b> () const</td></tr>
+<tr class="separator:abbe67d58ecf05ce5e0ffe483a8ced7e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7008e23cbaacd2878b7e81a01ac5d96b"><td class="memItemLeft" align="right" valign="top"><a id="a7008e23cbaacd2878b7e81a01ac5d96b" name="a7008e23cbaacd2878b7e81a01ac5d96b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> ()</td></tr>
 <tr class="memdesc:a7008e23cbaacd2878b7e81a01ac5d96b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear vertices and triangles vectors. <br /></td></tr>
@@ -129,9 +132,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>sew</b> ()</td></tr>
 <tr class="memitem:a392395eb4ec747a1cdfd61621b425295"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMesh.html#a392395eb4ec747a1cdfd61621b425295">loadTXT</a> (const char *link)</td></tr>
 <tr class="memdesc:a392395eb4ec747a1cdfd61621b425295"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loading .txt file function.  <br /></td></tr>
 <tr class="separator:a392395eb4ec747a1cdfd61621b425295"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a16021931c8f0a4a3102d745a51a2dd0d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMesh.html#a16021931c8f0a4a3102d745a51a2dd0d">saveFile</a> (const char *link) const</td></tr>
-<tr class="memdesc:a16021931c8f0a4a3102d745a51a2dd0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loading function who handle the file type.  <br /></td></tr>
-<tr class="separator:a16021931c8f0a4a3102d745a51a2dd0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07f5a934061e9ea2183a85747049b80e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMesh.html#a07f5a934061e9ea2183a85747049b80e">saveFile</a> (const char *link)</td></tr>
+<tr class="memdesc:a07f5a934061e9ea2183a85747049b80e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loading function who handle the file type.  <br /></td></tr>
+<tr class="separator:a07f5a934061e9ea2183a85747049b80e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a41b93634024808b5e7fea354c3f7c9c7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMesh.html#a41b93634024808b5e7fea354c3f7c9c7">saveOFF</a> (const char *link) const</td></tr>
 <tr class="memdesc:a41b93634024808b5e7fea354c3f7c9c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loading .off file function.  <br /></td></tr>
 <tr class="separator:a41b93634024808b5e7fea354c3f7c9c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -151,6 +154,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>sew</b> ()</td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>normalize</b> ()</td></tr>
 <tr class="memdesc:ae112f65fe9dd4221e505a2db2a70a210"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalize the mesh, in case of the radius is too large for the camera. <br /></td></tr>
 <tr class="separator:ae112f65fe9dd4221e505a2db2a70a210"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a169c28de22cdaa05e9bca7b514406397"><td class="memItemLeft" align="right" valign="top"><a id="a169c28de22cdaa05e9bca7b514406397" name="a169c28de22cdaa05e9bca7b514406397"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>deNormalize</b> ()</td></tr>
+<tr class="memdesc:a169c28de22cdaa05e9bca7b514406397"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalize the mesh, in case of the radius is too large for the camera. <br /></td></tr>
+<tr class="separator:a169c28de22cdaa05e9bca7b514406397"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The <a class="el" href="classMesh.html" title="The Mesh class, used for mesh loading and processing.">Mesh</a> class, used for mesh loading and processing. </p>
@@ -303,8 +310,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>normalize</b> ()</td>
 
 </div>
 </div>
-<a id="a16021931c8f0a4a3102d745a51a2dd0d" name="a16021931c8f0a4a3102d745a51a2dd0d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a16021931c8f0a4a3102d745a51a2dd0d">&#9670;&#160;</a></span>saveFile()</h2>
+<a id="a07f5a934061e9ea2183a85747049b80e" name="a07f5a934061e9ea2183a85747049b80e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07f5a934061e9ea2183a85747049b80e">&#9670;&#160;</a></span>saveFile()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -314,7 +321,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>normalize</b> ()</td>
           <td>(</td>
           <td class="paramtype">const char *&#160;</td>
           <td class="paramname"><em>link</em></td><td>)</td>
-          <td> const</td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">

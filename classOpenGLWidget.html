@@ -119,6 +119,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>verticesChanged</b> (
 <tr class="memitem:af5c6aa2cca6c56c6b298f74c601ef0f2"><td class="memItemLeft" align="right" valign="top"><a id="af5c6aa2cca6c56c6b298f74c601ef0f2" name="af5c6aa2cca6c56c6b298f74c601ef0f2"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>trianglesChanged</b> (int value)</td></tr>
 <tr class="separator:af5c6aa2cca6c56c6b298f74c601ef0f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a824caea9dad267738b5b0f2232a905f6"><td class="memItemLeft" align="right" valign="top"><a id="a824caea9dad267738b5b0f2232a905f6" name="a824caea9dad267738b5b0f2232a905f6"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>textureChanged</b> (QImage currentTexture)</td></tr>
+<tr class="separator:a824caea9dad267738b5b0f2232a905f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -128,12 +131,18 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2c001bfba4ecc9970e1e9879c57425c4"><td class="memItemLeft" align="right" valign="top"><a id="a2c001bfba4ecc9970e1e9879c57425c4" name="a2c001bfba4ecc9970e1e9879c57425c4"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>loadMesh</b> (const char *link)</td></tr>
 <tr class="separator:a2c001bfba4ecc9970e1e9879c57425c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a208c5a1c50204d6e9aeb03c47cbf5340"><td class="memItemLeft" align="right" valign="top"><a id="a208c5a1c50204d6e9aeb03c47cbf5340" name="a208c5a1c50204d6e9aeb03c47cbf5340"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>saveMesh</b> (const char *link) const</td></tr>
-<tr class="separator:a208c5a1c50204d6e9aeb03c47cbf5340"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93c8fe467e6624006de8d0f0d23bef44"><td class="memItemLeft" align="right" valign="top"><a id="a93c8fe467e6624006de8d0f0d23bef44" name="a93c8fe467e6624006de8d0f0d23bef44"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>loadTexture</b> (const QString &amp;textureFilePath)</td></tr>
+<tr class="separator:a93c8fe467e6624006de8d0f0d23bef44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0bb8a85c0ce664f3c96b8cce9622f1bf"><td class="memItemLeft" align="right" valign="top"><a id="a0bb8a85c0ce664f3c96b8cce9622f1bf" name="a0bb8a85c0ce664f3c96b8cce9622f1bf"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>saveMesh</b> (const char *link)</td></tr>
+<tr class="separator:a0bb8a85c0ce664f3c96b8cce9622f1bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a83495233f2b781a9a596db8460191476"><td class="memItemLeft" align="right" valign="top"><a id="a83495233f2b781a9a596db8460191476" name="a83495233f2b781a9a596db8460191476"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>updateMeshBuffers</b> ()</td></tr>
 <tr class="separator:a83495233f2b781a9a596db8460191476"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab30797ed42539823fc10bad9eec7a62a"><td class="memItemLeft" align="right" valign="top"><a id="ab30797ed42539823fc10bad9eec7a62a" name="ab30797ed42539823fc10bad9eec7a62a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>deleteTexture</b> ()</td></tr>
+<tr class="separator:ab30797ed42539823fc10bad9eec7a62a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -167,9 +176,18 @@ GLuint&#160;</td><td class="memItemRight" valign="bottom"><b>VBO</b></td></tr>
 <tr class="memitem:acce17124200666fe1b1fd3c7e5be1f08"><td class="memItemLeft" align="right" valign="top"><a id="acce17124200666fe1b1fd3c7e5be1f08" name="acce17124200666fe1b1fd3c7e5be1f08"></a>
 GLuint&#160;</td><td class="memItemRight" valign="bottom"><b>EBO</b></td></tr>
 <tr class="separator:acce17124200666fe1b1fd3c7e5be1f08"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aecae5d96f15f89e6ea98fbb147316c29"><td class="memItemLeft" align="right" valign="top"><a id="aecae5d96f15f89e6ea98fbb147316c29" name="aecae5d96f15f89e6ea98fbb147316c29"></a>
-QOpenGLShaderProgram *&#160;</td><td class="memItemRight" valign="bottom"><b>shaderProgram</b></td></tr>
-<tr class="separator:aecae5d96f15f89e6ea98fbb147316c29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af031e90e569509a55ae9818f50e522c4"><td class="memItemLeft" align="right" valign="top"><a id="af031e90e569509a55ae9818f50e522c4" name="af031e90e569509a55ae9818f50e522c4"></a>
+QOpenGLShaderProgram *&#160;</td><td class="memItemRight" valign="bottom"><b>shaderLight</b></td></tr>
+<tr class="separator:af031e90e569509a55ae9818f50e522c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7829c21de352115ae97959a042fc9c6"><td class="memItemLeft" align="right" valign="top"><a id="ab7829c21de352115ae97959a042fc9c6" name="ab7829c21de352115ae97959a042fc9c6"></a>
+QOpenGLShaderProgram *&#160;</td><td class="memItemRight" valign="bottom"><b>shaderTexture</b></td></tr>
+<tr class="separator:ab7829c21de352115ae97959a042fc9c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6b32ae5ad6c608f4af0a9a26bca6b4f"><td class="memItemLeft" align="right" valign="top"><a id="ae6b32ae5ad6c608f4af0a9a26bca6b4f" name="ae6b32ae5ad6c608f4af0a9a26bca6b4f"></a>
+QOpenGLShaderProgram *&#160;</td><td class="memItemRight" valign="bottom"><b>shaderCurrent</b></td></tr>
+<tr class="separator:ae6b32ae5ad6c608f4af0a9a26bca6b4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb76f6d9354bb49993c10e6fb6da7349"><td class="memItemLeft" align="right" valign="top"><a id="afb76f6d9354bb49993c10e6fb6da7349" name="afb76f6d9354bb49993c10e6fb6da7349"></a>
+QOpenGLTexture *&#160;</td><td class="memItemRight" valign="bottom"><b>texture</b></td></tr>
+<tr class="separator:afb76f6d9354bb49993c10e6fb6da7349"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9dc833d60d0761c32421f7a3a00701e"><td class="memItemLeft" align="right" valign="top"><a id="af9dc833d60d0761c32421f7a3a00701e" name="af9dc833d60d0761c32421f7a3a00701e"></a>
 <a class="el" href="classCamera.html">Camera</a>&#160;</td><td class="memItemRight" valign="bottom"><b>camera</b></td></tr>
 <tr class="separator:af9dc833d60d0761c32421f7a3a00701e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -188,6 +206,9 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>middlePressed</b></td
 <tr class="memitem:a8af607501834de17ee94e51bd542cce5"><td class="memItemLeft" align="right" valign="top"><a id="a8af607501834de17ee94e51bd542cce5" name="a8af607501834de17ee94e51bd542cce5"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>wireframe</b></td></tr>
 <tr class="separator:a8af607501834de17ee94e51bd542cce5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65c233e49f29120b3ad4060a159eb89c"><td class="memItemLeft" align="right" valign="top"><a id="a65c233e49f29120b3ad4060a159eb89c" name="a65c233e49f29120b3ad4060a159eb89c"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>useTexCoords</b></td></tr>
+<tr class="separator:a65c233e49f29120b3ad4060a159eb89c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>include/<a class="el" href="openGLWidget_8h_source.html">openGLWidget.h</a></li>

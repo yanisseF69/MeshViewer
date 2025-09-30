@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['openglwidget_0',['OpenGLWidget',['../classOpenGLWidget.html',1,'']]]
+  ['normalize_0',['normalize',['../classMesh.html#ae112f65fe9dd4221e505a2db2a70a210',1,'Mesh']]]
 ];
