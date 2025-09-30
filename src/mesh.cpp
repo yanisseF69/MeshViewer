@@ -8,7 +8,7 @@
 #include <set>
 #include <queue>
 
-Mesh::Mesh() {}
+Mesh::Mesh() : normCoeff(0.0f), hasTexCoords(false) {}
 
 const std::vector<Vertex> &Mesh::getVertices() const {
     return vertices;
@@ -25,9 +25,14 @@ const std::vector<unsigned int> Mesh::getIndices() const {
     return indices;
 }
 
+const bool &Mesh::hasTexture() const {
+    return hasTexCoords;
+}
+
 void Mesh::clear() {
     vertices.clear();
     faces.clear();
+    hasTexCoords = false;
 }
 
 void Mesh::sew() {
@@ -142,6 +147,7 @@ int Mesh::loadOFF(const char* link) {
         }
     }
 
+    meshFile.close();
     sew();
     computeNormals();
 
@@ -185,12 +191,12 @@ int Mesh::loadOBJ(const char* link) {
             std::vector<unsigned int> faceIndices;
 
             while (iss >> token) {
-                unsigned int vi = 0, ni = 0, ti;
+                unsigned int vi = 0, ni = 0, ti = 0;
                 // format v//n or v/t/n
                 if (sscanf(token.c_str(), "%u//%u", &vi, &ni) == 2) {
                     // v//n
                 }
-                else if (sscanf(token.c_str(), "%u/%*u/%u", &vi, &ni) == 2) {
+                else if (sscanf(token.c_str(), "%u/%u/%u", &vi, &ti, &ni) == 3) {
                     // v/t/n
                 }
                 else if (sscanf(token.c_str(), "%u", &vi) == 1) {
@@ -204,7 +210,7 @@ int Mesh::loadOBJ(const char* link) {
                     v.normal = tempNormals[ni];
                 }
                 if (ti < tempTexCoords.size() && ti >= 0) {
-                    v.texCoords = tempTexCoords[ni];
+                    v.texCoords = tempTexCoords[ti];
                 }
 
                 vertices.push_back(v);
@@ -218,8 +224,10 @@ int Mesh::loadOBJ(const char* link) {
         }
     }
 
+    meshFile.close();
     sew();
     if (tempNormals.empty()) computeNormals();
+    if (!tempTexCoords.empty()) hasTexCoords = true;
 
     return MeshError::OK;
 }
@@ -269,6 +277,8 @@ int Mesh::loadTXT(const char* link) {
         }
     }
 
+    meshFile.close();
+
     removeSuperTriangle();
     sew();
     computeNormals();
@@ -276,16 +286,18 @@ int Mesh::loadTXT(const char* link) {
     return MeshError::OK;
 }
 
-int Mesh::saveFile(const char *link) const {
+int Mesh::saveFile(const char *link) {
     std::string filename(link);
     std::transform(filename.begin(), filename.end(), filename.begin(), ::tolower);
     int ok;
+
+    if (normCoeff != 0.0f) deNormalize();
 
     if (filename.size() >= 4 && filename.substr(filename.size() - 4) == ".off") {
         ok = saveOFF(link);
         return ok;
     } else if (filename.size() >= 4 && filename.substr(filename.size() - 4) == ".obj") {
-        // ok = saveOBJ(link);
+        ok = saveOBJ(link);
         return ok;
     } else if (filename.size() >= 4 && filename.substr(filename.size() - 4) == ".txt") {
         ok = saveTXT(link);
@@ -314,18 +326,69 @@ int Mesh::saveOFF(const char* link) const {
         meshFile << 3 << " " << f.idVertices[0] << " " << f.idVertices[1] << " " << f.idVertices[2] << std::endl;
     }
 
+    meshFile.close();
     return MeshError::OK;
 }
 
 int Mesh::saveOBJ(const char *link) const {
-    std::ofstream meshFile;
-    meshFile.open(link);
-    if(!meshFile.is_open()) {
+    std::ofstream meshFile(link);
+    if (!meshFile.is_open()) {
         std::cerr << "Can't open file \"" << link << "\"\n";
         return MeshError::SAVE;
     }
 
-    return MeshError::UNKNOWN;
+    for (const Vertex& v : vertices) {
+        meshFile << "v " << v.position.x() << " " << v.position.y() << " " << v.position.z() << "\n";
+    }
+
+    bool hasTexCoords = !vertices.empty() && (vertices[0].texCoords != QVector2D());
+    if (hasTexCoords) {
+        for (const Vertex& v : vertices) {
+            meshFile << "vt " << v.texCoords.x() << " " << v.texCoords.y() << "\n";
+        }
+    }
+
+    bool hasNormals = !vertices.empty() && (vertices[0].normal != QVector3D());
+    if (hasNormals) {
+        for (const Vertex& v : vertices) {
+            meshFile << "vn " << v.normal.x() << " " << v.normal.y() << " " << v.normal.z() << "\n";
+        }
+    }
+
+    for (const Triangle& tri : faces) {
+        unsigned int idx0 = tri.idVertices[0] + 1;
+        unsigned int idx1 = tri.idVertices[1] + 1;
+        unsigned int idx2 = tri.idVertices[2] + 1;
+
+        if (hasTexCoords && hasNormals) {
+            // format v/t/n
+            meshFile << "f "
+                     << idx0 << "/" << idx0 << "/" << idx0 << " "
+                     << idx1 << "/" << idx1 << "/" << idx1 << " "
+                     << idx2 << "/" << idx2 << "/" << idx2 << "\n";
+        }
+        else if (hasTexCoords) {
+            // format v/t
+            meshFile << "f "
+                     << idx0 << "/" << idx0 << " "
+                     << idx1 << "/" << idx1 << " "
+                     << idx2 << "/" << idx2 << "\n";
+        }
+        else if (hasNormals) {
+            // format v//n (no texture)
+            meshFile << "f "
+                     << idx0 << "//" << idx0 << " "
+                     << idx1 << "//" << idx1 << " "
+                     << idx2 << "//" << idx2 << "\n";
+        }
+        else {
+            // format v only
+            meshFile << "f " << idx0 << " " << idx1 << " " << idx2 << "\n";
+        }
+    }
+
+    meshFile.close();
+    return MeshError::OK;
 }
 
 int Mesh::saveTXT(const char *link) const {
@@ -342,6 +405,7 @@ int Mesh::saveTXT(const char *link) const {
         meshFile << v.position.x() << " " << v.position.y() << " " << v.position.z() << std::endl;
     }
 
+    meshFile.close();
     return MeshError::OK;
 }
 
@@ -792,9 +856,6 @@ void Mesh::lawsonAlgorithm() {
     if (iterations >= maxIterations) {
         std::cerr << "Lawson algorithm reached maximum iterations limit\n";
     }
-
-    // sew();
-    // computeNormals();
 }
 
 void Mesh::lawsonLocalUpdate(int p) {
@@ -947,13 +1008,20 @@ void Mesh::lawsonLocalUpdate(int p) {
 }
 
 void Mesh::normalize() {
-    QVector3D center = getCenter();
-    float radius = getBoundingRadius();
-    float scale = 30.0f / radius;
+    normCoeff = getBoundingRadius();
+    float scale = 30.0f / normCoeff;
 
     for (auto& vertex : vertices) {
-        vertex.position = (vertex.position - center) * scale;
+        vertex.position = vertex.position * scale;
+    }
+}
+
+void Mesh::deNormalize() {
+    float scale = normCoeff / 30.0f;
+
+    for (auto& vertex : vertices) {
+        vertex.position = vertex.position * scale;
     }
 
-    computeNormals();
+    normCoeff = 0.0f;
 }

@@ -4,6 +4,7 @@
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions_3_3_Core>
 #include <QOpenGLShaderProgram>
+#include <QOpenGLTexture>
 #include <QMouseEvent>
 #include <QWheelEvent>
 
@@ -16,6 +17,7 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
 signals:
     void verticesChanged(int value);
     void trianglesChanged(int value);
+    void textureChanged(QImage currentTexture);
 
 
 public:
@@ -23,8 +25,10 @@ public:
     ~OpenGLWidget();
 
     int loadMesh(const char* link);
-    int saveMesh(const char* link) const;
+    void loadTexture(const QString& textureFilePath);
+    int saveMesh(const char* link);
     void updateMeshBuffers();
+    void deleteTexture();
 
 public slots:
     void setWireframe(bool enabled);
@@ -42,7 +46,10 @@ protected:
     GLuint VAO;
     GLuint VBO;
     GLuint EBO;
-    QOpenGLShaderProgram *shaderProgram;
+    QOpenGLShaderProgram *shaderLight;
+    QOpenGLShaderProgram *shaderTexture;
+    QOpenGLShaderProgram *shaderCurrent;
+    QOpenGLTexture *texture;
 
     Camera camera;
     QPointF lastMousePos;
@@ -51,6 +58,7 @@ protected:
 
     Mesh mesh;
     bool wireframe;
+    bool useTexCoords;
 
 };
 

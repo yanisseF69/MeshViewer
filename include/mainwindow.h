@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QGraphicsScene>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -24,12 +25,17 @@ public:
 
     void onActionLoad();
     void onSaveClicked();
+    void onLoadTexAction();
+    void onDeleteTexAction();
+    void updateTextureDisplay(QImage currentTexture);
 
 private:
 
     void handleMeshError(int err);
+    void handleTextureMessage(QString filename);
 
     Ui::MainWindow *ui;
     QTimer *errorTimer;
+    QGraphicsScene *scene;
 };
 #endif // MAINWINDOW_H

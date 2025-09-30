@@ -6,6 +6,8 @@
 #include <QSurfaceFormat>
 #include <QFileDialog>
 #include <QTimer>
+#include <QGraphicsPixmapItem>
+#include <QFileInfo>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
@@ -19,6 +21,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     this->setWindowTitle("Mesh Viewer");
+    scene = new QGraphicsScene(this);
+    ui->graphicsView->setScene(scene);
 
     connect(ui->actionLoad, &QAction::triggered, this, &MainWindow::onActionLoad);
     connect(ui->openGLWidget, &OpenGLWidget::verticesChanged, this, [=](unsigned int count) {
@@ -31,6 +35,9 @@ MainWindow::MainWindow(QWidget *parent)
             ui->openGLWidget, &OpenGLWidget::setWireframe);
     connect(errorTimer, SIGNAL(timeout()), this, SLOT(clearErrorLabel()));
     connect(ui->saveButton, &QPushButton::clicked, this, &MainWindow::onSaveClicked);
+    connect(ui->uploadTexAction, &QPushButton::clicked, this, &MainWindow::onLoadTexAction);
+    connect(ui->deleteTexAction, &QPushButton::clicked, this, &MainWindow::onDeleteTexAction);
+    connect(ui->openGLWidget, &OpenGLWidget::textureChanged, this, &MainWindow::updateTextureDisplay);
 
 
 }
@@ -39,6 +46,7 @@ MainWindow::~MainWindow()
 {
     delete ui;
     delete errorTimer;
+    delete scene;
 }
 
 void MainWindow::clearErrorLabel() {
@@ -76,6 +84,37 @@ void MainWindow::onSaveClicked() {
     }
 }
 
+void MainWindow::onLoadTexAction(){
+    QString filename = QFileDialog::getOpenFileName(
+        this,
+        tr("Open an image"),
+        QString(),
+        tr("Image file (*.png *.jpg *.jpeg *.tif);;All files (*.*)")
+        );
+
+    if (!filename.isEmpty()) {
+        ui->openGLWidget->loadTexture(filename);
+        handleTextureMessage(filename);
+    }
+}
+
+void MainWindow::onDeleteTexAction() {
+    ui->openGLWidget->deleteTexture();
+    handleTextureMessage(QString());
+}
+
+void MainWindow::updateTextureDisplay(QImage currentTexture) {
+    scene->clear();
+
+    if (!currentTexture.isNull()) {
+        QGraphicsPixmapItem* item = new QGraphicsPixmapItem(QPixmap::fromImage(currentTexture));
+        scene->addItem(item);
+        scene->setSceneRect(item->boundingRect());
+        ui->graphicsView->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
+    }
+
+}
+
 void MainWindow::handleMeshError(int err) {
     switch(err) {
     case MeshError::OK:
@@ -105,5 +144,15 @@ void MainWindow::handleMeshError(int err) {
         break;
     default:
         break;
+    }
+}
+
+void MainWindow::handleTextureMessage(QString filename) {
+    if (filename.isEmpty()) {
+        ui->textureLabel->setText(tr("No textures selected."));
+    } else {
+        QFileInfo fileInfo(filename);
+        QString baseName = fileInfo.fileName();
+        ui->textureLabel->setText(baseName);
     }
 }

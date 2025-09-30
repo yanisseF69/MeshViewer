@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>831</width>
+    <height>605</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <widget class="QWidget" name="horizontalLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>279</x>
+      <x>309</x>
       <y>-1</y>
       <width>521</width>
       <height>561</height>
@@ -32,10 +32,10 @@
    <widget class="QWidget" name="verticalLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>50</y>
-      <width>281</width>
-      <height>131</height>
+      <x>10</x>
+      <y>10</y>
+      <width>291</width>
+      <height>141</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="meshInfoLayout">
@@ -116,9 +116,9 @@
    <widget class="QWidget" name="verticalLayoutWidget_2">
     <property name="geometry">
      <rect>
-      <x>0</x>
+      <x>10</x>
       <y>500</y>
-      <width>281</width>
+      <width>291</width>
       <height>61</height>
      </rect>
     </property>
@@ -138,17 +138,17 @@
    <widget class="QWidget" name="verticalLayoutWidget_3">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>300</y>
+      <x>10</x>
+      <y>400</y>
       <width>171</width>
       <height>101</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="saveLabel">
        <property name="text">
-        <string>Select format :</string>
+        <string>Select saving format :</string>
        </property>
       </widget>
      </item>
@@ -185,13 +185,53 @@
      </item>
     </layout>
    </widget>
+   <widget class="QWidget" name="verticalLayoutWidget_4">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>190</y>
+      <width>291</width>
+      <height>141</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="textureLayout">
+     <item>
+      <widget class="QLabel" name="textureLabel">
+       <property name="text">
+        <string>No textures selected.</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QPushButton" name="uploadTexAction">
+         <property name="text">
+          <string>Upload</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGraphicsView" name="graphicsView"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="deleteTexAction">
+         <property name="text">
+          <string>Delete</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>831</width>
      <height>22</height>
     </rect>
    </property>

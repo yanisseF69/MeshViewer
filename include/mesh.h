@@ -28,6 +28,7 @@ public:
 
     const std::vector<Vertex> &getVertices() const;
     const std::vector<unsigned int> getIndices() const;
+    const bool &hasTexture() const;
 
     /**
      * @brief Clear vertices and triangles vectors.
@@ -72,7 +73,7 @@ public:
      * @param link
      * @return MeshError::OK if the function terminates correctly, other else.
      */
-    int saveFile(const char* link) const;
+    int saveFile(const char* link);
 
     /**
      * @brief Loading .off file function.
@@ -111,6 +112,11 @@ public:
      * @brief Normalize the mesh, in case of the radius is too large for the camera.
      */
     void normalize();
+
+    /**
+     * @brief Normalize the mesh, in case of the radius is too large for the camera.
+     */
+    void deNormalize();
 
 private:
 
@@ -224,6 +230,8 @@ private:
 
     std::vector<Vertex> vertices;
     std::vector<Triangle> faces;
+    float normCoeff;
+    bool hasTexCoords;
 };
 
 #endif // MESH_H
