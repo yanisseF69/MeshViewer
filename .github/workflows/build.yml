@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: jurplel/install-qt-action@v3
         with:
-          version: 6.7.2
+          version: 6.9.2
       - name: Configure
         run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
       - name: Build
@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: jurplel/install-qt-action@v3
         with:
-          version: 6.7.2
+          version: 6.9.2
       - name: Configure
         run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
       - name: Build
@@ -42,7 +42,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: jurplel/install-qt-action@v3
         with:
-          version: 6.7.2
+          version: 6.9.2
       - name: Configure Intel
         run: cmake -B build-intel -S . -DCMAKE_BUILD_TYPE=Release
       - name: Build Intel
@@ -58,7 +58,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: jurplel/install-qt-action@v3
         with:
-          version: 6.7.2
+          version: 6.9.2
       - name: Configure ARM
         run: cmake -B build-arm -S . -DCMAKE_BUILD_TYPE=Release
       - name: Build ARM
