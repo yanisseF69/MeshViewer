@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Mesh Viewer
+Exec=MeshViewer
+Icon=meshviewer
+Type=Application
+Terminal=false
+Categories=Education

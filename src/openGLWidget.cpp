@@ -50,7 +50,7 @@ void OpenGLWidget::loadTexture(const QString& textureFilePath) {
     image = image.convertToFormat(QImage::Format_RGBA8888);
 
     useTexCoords = true;
-    texture = new QOpenGLTexture(image.flipped());
+    texture = new QOpenGLTexture(image.mirrored(false, true));
     texture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
     texture->setMagnificationFilter(QOpenGLTexture::Linear);
     texture->setWrapMode(QOpenGLTexture::Repeat);

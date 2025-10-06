@@ -5,12 +5,15 @@ find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets OpenGL Widgets OpenGLWidge
 
 qt_standard_project_setup()
 
-set(MESHVIEWER_DATA_DIR "${CMAKE_INSTALL_PREFIX}")
+set(MESHVIEWER_DATA_DIR "${PROJECT_SOURCE_DIR}")
 if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "Release")
-    set(MESHVIEWER_DATA_DIR "${CMAKE_SOURCE_DIR}")
+    set(MESHVIEWER_DATA_DIR "${PROJECT_SOURCE_DIR}")
 endif()
-configure_file(${PROJECT_SOURCE_DIR}/include/config.h.in
-    ${PROJECT_SOURCE_DIR}/include/config.h)
+configure_file(
+    ${PROJECT_SOURCE_DIR}/include/config.h.in
+    ${CMAKE_CURRENT_BINARY_DIR}/include/config.h
+    @ONLY
+)
 
 
 

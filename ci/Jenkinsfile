@@ -1,0 +1,85 @@
+pipeline {
+    agent {
+        docker {
+            image 'stateoftheartio/qt6:6.7-mingw-aqt'
+            args '-u 0:0'
+            alwaysPull true
+        }
+    }
+    environment {
+        BUILD_DIR  = 'build-windows'
+        BIN_DIR    = 'build-windows/build'
+        DEPLOY_DIR = 'build-windows/MeshViewer'
+        ZIP_PATH   = 'build-windows/MeshViewer.zip'
+        REPO       = 'yanisseF69/MeshViewer'
+        TAG        = "v${env.BUILD_NUMBER}"
+        NAME       = "MeshViewer v${env.BUILD_NUMBER}"
+    }
+    stages {
+        stage('Configure & Build') {
+            steps {
+                sh '''
+          set -e
+          mkdir -p "$BIN_DIR"
+          qt-cmake . -G Ninja -B "$BIN_DIR"
+          cmake --build "$BIN_DIR"
+        '''
+            }
+        }
+        stage('Deploy Qt runtime') {
+            steps {
+                sh '''
+          set -e
+          mkdir -p "$DEPLOY_DIR"
+          windeployqt --compiler-runtime --qmldir . \
+            --dir "$DEPLOY_DIR" --libdir "$DEPLOY_DIR" --plugindir "$DEPLOY_DIR" \
+            "$BIN_DIR/MeshViewer.exe"
+          cp "$BIN_DIR/MeshViewer.exe" "$DEPLOY_DIR/"
+        '''
+            }
+        }
+        stage('Package ZIP') {
+            steps {
+                sh '''
+          set -e
+          if ! command -v zip >/dev/null 2>&1; then
+            if [ -f /etc/debian_version ] || grep -qi debian /etc/os-release; then
+              apt-get update && apt-get install -y zip
+            elif grep -qi alpine /etc/os-release; then
+              apk add --no-cache zip
+            fi
+          fi
+          rm -f "$ZIP_PATH"
+          zip -r "$ZIP_PATH" "$DEPLOY_DIR"
+        '''
+            }
+        }
+        stage('Archive') {
+            steps {
+                archiveArtifacts artifacts: 'build-windows/MeshViewer/**', fingerprint: true
+                archiveArtifacts artifacts: 'build-windows/MeshViewer.zip', fingerprint: true
+            }
+        }
+        stage('Publish Release (gh)') {
+            steps {
+                withCredentials([string(credentialsId: 'gh_pat', variable: 'GITHUB_TOKEN')]) {
+                    sh '''
+            set -e
+            if ! command -v gh >/dev/null 2>&1; then
+              if [ -f /etc/debian_version ] || grep -qi debian /etc/os-release; then
+                apt-get update && apt-get install -y gh
+              elif grep -qi alpine /etc/os-release; then
+                apk add --no-cache github-cli
+              fi
+            fi
+
+            gh release create "$TAG" "$ZIP_PATH" \
+              --repo "$REPO" --title "$NAME" --notes "CI build ${BUILD_NUMBER}" --prerelease || true
+
+            gh release upload "$TAG" "$ZIP_PATH" --repo "$REPO" --clobber
+          '''
+                }
+            }
+        }
+    }
+}

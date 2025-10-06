@@ -111,7 +111,7 @@ int Mesh::loadOFF(const char* link) {
         return MeshError::FORMAT;
     }
 
-    size_t numVertices = 0, numFaces = 0, numEdges = 0;
+    int numVertices = 0, numFaces = 0, numEdges = 0;
     std::string token;
 
     if (!nextToken(token)) return MeshError::READ;
@@ -123,7 +123,7 @@ int Mesh::loadOFF(const char* link) {
 
     clear();
 
-    for (size_t i = 0; i < numVertices; ++i) {
+    for (int i = 0; i < numVertices; ++i) {
         float x, y, z;
         if (!(meshFile >> x >> y >> z)) {
             return MeshError::READ;
@@ -131,7 +131,7 @@ int Mesh::loadOFF(const char* link) {
         vertices.push_back(Vertex(x, y, z));
     }
 
-    for (size_t i = 0; i < numFaces; ++i) {
+    for (int i = 0; i < numFaces; ++i) {
         int nVerts;
         if (!(meshFile >> nVerts)) {
             return MeshError::READ;
@@ -250,7 +250,7 @@ int Mesh::loadTXT(const char* link) {
         return false;
     };
 
-    size_t numVertices = 0;
+    int numVertices = 0;
     std::string token;
     if (!nextToken(token)) return MeshError::READ;
     try {
@@ -265,7 +265,7 @@ int Mesh::loadTXT(const char* link) {
 
     initializeSuperTriangle();
 
-    for (size_t i = 0; i < numVertices; ++i) {
+    for (int i = 0; i < numVertices; ++i) {
         float x, y, z;
         if (!(meshFile >> x >> y >> z)) {
             return MeshError::READ;
@@ -438,7 +438,7 @@ void Mesh::computeNormals() {
         v.normal = QVector3D(0,0,0);
     }
 
-    for (size_t i = 0; i < faces.size(); i ++) {
+    for (int i = 0; i < faces.size(); i ++) {
         unsigned int i0 = faces[i].idVertices[0];
         unsigned int i1 = faces[i].idVertices[1];
         unsigned int i2 = faces[i].idVertices[2];

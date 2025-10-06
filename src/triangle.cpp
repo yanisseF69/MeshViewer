@@ -19,7 +19,7 @@ int Triangle::localIndex(unsigned int indice) const {
 }
 
 std::pair<int, int> Triangle::findCommonEdge(const Triangle &t) const {
-    for (size_t i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++) {
         int v1 = idVertices[i];
         int v2 = idVertices[(i + 1) % 3];
 
