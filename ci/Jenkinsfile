@@ -20,23 +20,6 @@ pipeline {
     CMAKE_TRY_COMPILE_TARGET_TYPE = 'STATIC_LIBRARY'
   }
   stages {
-    stage('Pre-clean workspace') {
-      agent any
-      steps {
-        script {
-          def uid = sh(script: 'id -u', returnStdout: true).trim()
-          def gid = sh(script: 'id -g', returnStdout: true).trim()
-          docker.image('alpine:3.19').inside('--user 0:0') {
-            sh """
-              set -e
-              chown -R ${uid}:${gid} "${WORKSPACE}" || true
-              find "${WORKSPACE}" -mindepth 1 -maxdepth 1 -exec rm -rf {} + || true
-            """
-          }
-        }
-      }
-    }
-
     stage('Checkout') {
       steps {
         checkout scm
