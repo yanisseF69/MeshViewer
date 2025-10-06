@@ -1,34 +1,52 @@
 pipeline {
-    agent {
-        docker {
-            image 'stateoftheartio/qt6:6.7-mingw-aqt'
-            args '-u 0:0'
-            alwaysPull true
-        }
+  agent {
+    docker {
+      image 'stateoftheartio/qt6:6.7-mingw-aqt'
+      alwaysPull true
     }
-    environment {
-        BUILD_DIR  = 'build-windows'
-        BIN_DIR    = 'build-windows/build'
-        DEPLOY_DIR = 'build-windows/MeshViewer'
-        ZIP_PATH   = 'build-windows/MeshViewer.zip'
-        REPO       = 'yanisseF69/MeshViewer'
-        TAG        = "v${env.BUILD_NUMBER}"
-        NAME       = "MeshViewer v${env.BUILD_NUMBER}"
+  }
+  environment {
+    WINEPREFIX = "${env.WORKSPACE}/.wine"
+    BUILD_DIR  = 'build-windows'
+    BIN_DIR    = 'build-windows/build'
+    DEPLOY_DIR = 'build-windows/MeshViewer'
+    ZIP_PATH   = 'build-windows/MeshViewer.zip'
+    REPO       = 'yanisseF69/MeshViewer'
+    TAG        = "v${env.BUILD_NUMBER}"
+    NAME       = "MeshViewer v${env.BUILD_NUMBER}"
+    CMAKE_TRY_COMPILE_TARGET_TYPE = 'STATIC_LIBRARY'
+  }
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
     }
-    stages {
-        stage('Configure & Build') {
-            steps {
-                sh '''
+
+    stage('Prepare Wine prefix') {
+      steps {
+        sh '''
+          set -e
+          mkdir -p "$WINEPREFIX"
+        '''
+      }
+    }
+
+    stage('Configure & Build') {
+      steps {
+        sh '''
           set -e
           mkdir -p "$BIN_DIR"
-          qt-cmake . -G Ninja -B "$BIN_DIR"
+          qt-cmake . -G Ninja -B "$BIN_DIR" \
+            -DCMAKE_TRY_COMPILE_TARGET_TYPE="$CMAKE_TRY_COMPILE_TARGET_TYPE"
           cmake --build "$BIN_DIR"
         '''
-            }
-        }
-        stage('Deploy Qt runtime') {
-            steps {
-                sh '''
+      }
+    }
+
+    stage('Deploy Qt runtime') {
+      steps {
+        sh '''
           set -e
           mkdir -p "$DEPLOY_DIR"
           windeployqt --compiler-runtime --qmldir . \
@@ -36,50 +54,62 @@ pipeline {
             "$BIN_DIR/MeshViewer.exe"
           cp "$BIN_DIR/MeshViewer.exe" "$DEPLOY_DIR/"
         '''
-            }
-        }
-        stage('Package ZIP') {
-            steps {
-                sh '''
-          set -e
-          if ! command -v zip >/dev/null 2>&1; then
-            if [ -f /etc/debian_version ] || grep -qi debian /etc/os-release; then
-              apt-get update && apt-get install -y zip
-            elif grep -qi alpine /etc/os-release; then
-              apk add --no-cache zip
-            fi
-          fi
-          rm -f "$ZIP_PATH"
-          zip -r "$ZIP_PATH" "$DEPLOY_DIR"
-        '''
-            }
-        }
-        stage('Archive') {
-            steps {
-                archiveArtifacts artifacts: 'build-windows/MeshViewer/**', fingerprint: true
-                archiveArtifacts artifacts: 'build-windows/MeshViewer.zip', fingerprint: true
-            }
-        }
-        stage('Publish Release (gh)') {
-            steps {
-                withCredentials([string(credentialsId: 'gh_pat', variable: 'GITHUB_TOKEN')]) {
-                    sh '''
-            set -e
-            if ! command -v gh >/dev/null 2>&1; then
-              if [ -f /etc/debian_version ] || grep -qi debian /etc/os-release; then
-                apt-get update && apt-get install -y gh
-              elif grep -qi alpine /etc/os-release; then
-                apk add --no-cache github-cli
-              fi
-            fi
-
-            gh release create "$TAG" "$ZIP_PATH" \
-              --repo "$REPO" --title "$NAME" --notes "CI build ${BUILD_NUMBER}" --prerelease || true
-
-            gh release upload "$TAG" "$ZIP_PATH" --repo "$REPO" --clobber
-          '''
-                }
-            }
-        }
+      }
     }
+
+    stage('Package ZIP (python)') {
+      steps {
+        sh '''
+          set -e
+          python3 - <<'PY'
+import os, sys, zipfile
+zip_path = os.environ.get("ZIP_PATH")
+deploy_dir = os.environ.get("DEPLOY_DIR")
+with zipfile.ZipFile(zip_path, 'w', compression=zipfile.ZIP_DEFLATED) as z:
+    for root, dirs, files in os.walk(deploy_dir):
+        for f in files:
+            full = os.path.join(root, f)
+            rel  = os.path.relpath(full, os.path.dirname(deploy_dir))
+            z.write(full, rel)
+print(f"Created {zip_path}")
+PY
+        '''
+      }
+    }
+
+    stage('Archive') {
+      steps {
+        archiveArtifacts artifacts: 'build-windows/MeshViewer/**', fingerprint: true
+        archiveArtifacts artifacts: 'build-windows/MeshViewer.zip', fingerprint: true
+      }
+    }
+
+    stage('Publish Release (GitHub REST)') {
+      steps {
+        withCredentials([string(credentialsId: 'gh_pat', variable: 'GITHUB_TOKEN')]) {
+          sh '''
+            set -e
+            API="https://api.github.com/repos/${REPO}"
+
+            CREATE_RESP=$(curl -sS -H "Authorization: Bearer $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              -X POST "$API/releases" \
+              -d "{\"tag_name\":\"$TAG\",\"name\":\"$NAME\",\"body\":\"CI build ${BUILD_NUMBER}\",\"draft\":false,\"prerelease\":true}")
+
+            ID=$(echo "$CREATE_RESP" | jq -r '.id // empty' || true)
+            if [ -z "$ID" ]; then
+              ID=$(curl -sS -H "Authorization: Bearer $GITHUB_TOKEN" \
+                -H "Accept: application/vnd.github+json" \
+                "$API/releases/tags/$TAG" | jq -r '.id')
+            fi
+
+            curl -sS -H "Authorization: Bearer $GITHUB_TOKEN" \
+              -H "Content-Type: application/zip" \
+              --data-binary @"$ZIP_PATH" \
+              "https://uploads.github.com/repos/${REPO}/releases/${ID}/assets?name=$(basename "$ZIP_PATH")"
+          '''
+        }
+      }
+    }
+  }
 }
