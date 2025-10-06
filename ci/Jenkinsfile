@@ -5,6 +5,9 @@ pipeline {
       alwaysPull true
     }
   }
+  options {
+    skipDefaultCheckout()
+  }
   environment {
     WINEPREFIX = "${env.WORKSPACE}/.wine"
     BUILD_DIR  = 'build-windows'
@@ -17,6 +20,23 @@ pipeline {
     CMAKE_TRY_COMPILE_TARGET_TYPE = 'STATIC_LIBRARY'
   }
   stages {
+    stage('Pre-clean workspace') {
+      agent any
+      steps {
+        script {
+          def uid = sh(script: 'id -u', returnStdout: true).trim()
+          def gid = sh(script: 'id -g', returnStdout: true).trim()
+          docker.image('alpine:3.19').inside('--user 0:0') {
+            sh """
+              set -e
+              chown -R ${uid}:${gid} "${WORKSPACE}" || true
+              find "${WORKSPACE}" -mindepth 1 -maxdepth 1 -exec rm -rf {} + || true
+            """
+          }
+        }
+      }
+    }
+
     stage('Checkout') {
       steps {
         checkout scm
@@ -25,10 +45,7 @@ pipeline {
 
     stage('Prepare Wine prefix') {
       steps {
-        sh '''
-          set -e
-          mkdir -p "$WINEPREFIX"
-        '''
+        sh 'mkdir -p "$WINEPREFIX"'
       }
     }
 
@@ -62,16 +79,17 @@ pipeline {
         sh '''
           set -e
           python3 - <<'PY'
-import os, sys, zipfile
-zip_path = os.environ.get("ZIP_PATH")
-deploy_dir = os.environ.get("DEPLOY_DIR")
+import os, zipfile
+zip_path = os.environ["ZIP_PATH"]
+deploy_dir = os.environ["DEPLOY_DIR"]
+base = os.path.dirname(deploy_dir)
 with zipfile.ZipFile(zip_path, 'w', compression=zipfile.ZIP_DEFLATED) as z:
-    for root, dirs, files in os.walk(deploy_dir):
+    for root, _, files in os.walk(deploy_dir):
         for f in files:
             full = os.path.join(root, f)
-            rel  = os.path.relpath(full, os.path.dirname(deploy_dir))
+            rel  = os.path.relpath(full, base)
             z.write(full, rel)
-print(f"Created {zip_path}")
+print("Created", zip_path)
 PY
         '''
       }
@@ -81,34 +99,6 @@ PY
       steps {
         archiveArtifacts artifacts: 'build-windows/MeshViewer/**', fingerprint: true
         archiveArtifacts artifacts: 'build-windows/MeshViewer.zip', fingerprint: true
-      }
-    }
-
-    stage('Publish Release (GitHub REST)') {
-      steps {
-        withCredentials([string(credentialsId: 'gh_pat', variable: 'GITHUB_TOKEN')]) {
-          sh '''
-            set -e
-            API="https://api.github.com/repos/${REPO}"
-
-            CREATE_RESP=$(curl -sS -H "Authorization: Bearer $GITHUB_TOKEN" \
-              -H "Accept: application/vnd.github+json" \
-              -X POST "$API/releases" \
-              -d "{\"tag_name\":\"$TAG\",\"name\":\"$NAME\",\"body\":\"CI build ${BUILD_NUMBER}\",\"draft\":false,\"prerelease\":true}")
-
-            ID=$(echo "$CREATE_RESP" | jq -r '.id // empty' || true)
-            if [ -z "$ID" ]; then
-              ID=$(curl -sS -H "Authorization: Bearer $GITHUB_TOKEN" \
-                -H "Accept: application/vnd.github+json" \
-                "$API/releases/tags/$TAG" | jq -r '.id')
-            fi
-
-            curl -sS -H "Authorization: Bearer $GITHUB_TOKEN" \
-              -H "Content-Type: application/zip" \
-              --data-binary @"$ZIP_PATH" \
-              "https://uploads.github.com/repos/${REPO}/releases/${ID}/assets?name=$(basename "$ZIP_PATH")"
-          '''
-        }
       }
     }
   }
