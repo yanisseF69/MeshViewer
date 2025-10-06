@@ -36,6 +36,8 @@ pipeline {
       steps {
         sh '''
           set -e
+[ -f /etc/profile ] && . /etc/profile
+for f in /etc/profile.d/*.sh; do . "$f"; done || true
           mkdir -p "$BIN_DIR"
           qt-cmake . -G Ninja -B "$BIN_DIR"
           cmake --build "$BIN_DIR"
@@ -47,6 +49,8 @@ pipeline {
       steps {
         sh '''
           set -e
+[ -f /etc/profile ] && . /etc/profile
+for f in /etc/profile.d/*.sh; do . "$f"; done || true
           mkdir -p "$DEPLOY_DIR"
           windeployqt --compiler-runtime --qmldir . \
             --dir "$DEPLOY_DIR" --libdir "$DEPLOY_DIR" --plugindir "$DEPLOY_DIR" \
