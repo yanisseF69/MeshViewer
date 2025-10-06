@@ -37,8 +37,7 @@ pipeline {
         sh '''
           set -e
           mkdir -p "$BIN_DIR"
-          qt-cmake . -G Ninja -B "$BIN_DIR" \
-            -DCMAKE_TRY_COMPILE_TARGET_TYPE="$CMAKE_TRY_COMPILE_TARGET_TYPE"
+          qt-cmake . -G Ninja -B "$BIN_DIR"
           cmake --build "$BIN_DIR"
         '''
       }
