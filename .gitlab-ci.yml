@@ -32,8 +32,8 @@ build-linux:
     - cmake --build ./build-linux
     - cd ./build-linux
     - linuxdeploy --executable ./MeshViewer --appdir ./deploy  --desktop-file ../data/MeshViewer.desktop --icon-file ../data/meshviewer.png --plugin qt;
-    - wget -q https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage -O /tmp/appimagetool;
-    - /tmp/appimagetool --appimage-extract-and-run ./deploy ./MeshViewer-linux_x86_64.AppImage
+    - wget -q https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage -O ./appimagetool;
+    - ./appimagetool --appimage-extract-and-run ./deploy ./MeshViewer-linux_x86_64.AppImage
   artifacts:
     paths:
       - build-linux/MeshViewer-linux_x86_64.AppImage
