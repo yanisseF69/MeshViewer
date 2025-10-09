@@ -30,10 +30,12 @@ release-github:
     - export GITHUB_REPO="yanisseF69/MeshViewer"
     - export RELEASE_NAME="Continuous Build"
     - export ZIP_PATH="build-windows/MeshViewer-Windows.zip"
+    - export TAG_NAME="continuous"
 
     - |
       RELEASE_ID=$(curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
-        "https://api.github.com/repos/${GITHUB_REPO}/releases/tags/continuous" | jq -r '.id // empty')
+        "https://api.github.com/repos/${GITHUB_REPO}/releases/tags/${TAG_NAME}" \
+        | jq -r '.id // empty')
 
     - |
       if [ -z "$RELEASE_ID" ]; then
@@ -41,13 +43,12 @@ release-github:
         RESPONSE=$(curl -s -X POST \
           -H "Authorization: token ${GITHUB_TOKEN}" \
           -H "Content-Type: application/json" \
-          -d "{\"tag_name\": \"continuous\", \"name\": \"${RELEASE_NAME}\", \"body\": \"Automated build from GitLab CI.\", \"prerelease\": true}" \
+          -d "{\"tag_name\": \"${TAG_NAME}\", \"name\": \"${RELEASE_NAME}\", \"body\": \"Automated build from GitLab CI.\", \"draft\": false, \"prerelease\": false}" \
           "https://api.github.com/repos/${GITHUB_REPO}/releases")
         RELEASE_ID=$(echo "$RESPONSE" | jq -r '.id')
       else
         echo "Release exists (ID: $RELEASE_ID)"
       fi
-
 
     - |
       echo "Uploading asset..."
@@ -55,7 +56,7 @@ release-github:
         -H "Authorization: token ${GITHUB_TOKEN}" \
         -H "Content-Type: application/zip" \
         --data-binary @"${ZIP_PATH}" \
-        "https://uploads.github.com/repos/${GITHUB_REPO}/releases/${RELEASE_ID}/assets?name=MeshViewer-Windows.zip"
+        "https://uploads.github.com/repos/${GITHUB_REPO}/releases/${RELEASE_ID}/assets?name=$(basename ${ZIP_PATH})"
 
   only:
     - main
