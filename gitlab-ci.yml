@@ -1,0 +1,64 @@
+stages:
+  - build
+  - release
+
+build-windows:
+  stage: build
+  image: stateoftheartio/qt6:6.7-mingw-aqt
+  script:
+    - set -e
+    - mkdir -p build-windows
+    - qt-cmake . -G Ninja -B ./build-windows
+    - cmake --build ./build-windows
+    - windeployqt --compiler-runtime --qmldir ../ \
+        --dir ./build-windows/MeshViewer/ \
+        --libdir ./build-windows/MeshViewer/ \
+        --plugindir ./build-windows/MeshViewer/ \
+        ./build-windows/MeshViewer.exe
+    - cp ./build-windows/MeshViewer.exe ./build-windows/MeshViewer/
+    - cd ./build-windows && tar -cvzf ./MeshViewer-Windows.zip ./MeshViewer
+  artifacts:
+    paths:
+      - build-windows/MeshViewer-Windows.zip
+    expire_in: 1 week
+  only:
+    - main
+
+release-github:
+  stage: release
+  image: alpine:latest
+  dependencies:
+    - build-windows
+  script:
+    - apk add --no-cache curl jq
+    - export RELEASE_NAME="Continuous Build"
+    - export ZIP_PATH="build-windows/MeshViewer-Windows.zip"
+
+    - |
+      RELEASE_ID=$(curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
+        "https://api.github.com/repos/${GITHUB_REPO}/releases/tags/continuous" | jq -r '.id // empty')
+
+    - |
+      if [ -z "$RELEASE_ID" ]; then
+        echo "Creating release..."
+        RESPONSE=$(curl -s -X POST \
+          -H "Authorization: token ${GITHUB_TOKEN}" \
+          -H "Content-Type: application/json" \
+          -d "{\"tag_name\": \"continuous\", \"name\": \"${RELEASE_NAME}\", \"body\": \"Automated build from GitLab CI.\", \"prerelease\": true}" \
+          "https://api.github.com/repos/${GITHUB_REPO}/releases")
+        RELEASE_ID=$(echo "$RESPONSE" | jq -r '.id')
+      else
+        echo "Release exists (ID: $RELEASE_ID)"
+      fi
+
+
+    - |
+      echo "Uploading asset..."
+      curl -s -X POST \
+        -H "Authorization: token ${GITHUB_TOKEN}" \
+        -H "Content-Type: application/zip" \
+        --data-binary @"${ZIP_PATH}" \
+        "https://uploads.github.com/repos/${GITHUB_REPO}/releases/${RELEASE_ID}/assets?name=MeshViewer-Windows.zip"
+
+  only:
+    - main
