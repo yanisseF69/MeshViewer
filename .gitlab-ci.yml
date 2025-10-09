@@ -25,8 +25,8 @@ build-linux:
   image: stateoftheartio/qt6:6.7-gcc-aqt
   script:
     - set -e
-    - apt update
-    - apt install -y libgl-dev libvulkan-dev wget file
+    - sudo apt update
+    - sudo apt install -y libgl-dev libvulkan-dev wget file
     - mkdir -p build-linux
     - qt-cmake . -G Ninja -B ./build-linux
     - cmake --build ./build-linux
