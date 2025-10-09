@@ -10,11 +10,7 @@ build-windows:
     - mkdir -p build-windows
     - qt-cmake . -G Ninja -B ./build-windows
     - cmake --build ./build-windows
-    - windeployqt --compiler-runtime --qmldir ./ \
-        --dir ./build-windows/MeshViewer/ \
-        --libdir ./build-windows/MeshViewer/ \
-        --plugindir ./build-windows/MeshViewer/ \
-        ./build-windows/MeshViewer.exe
+    - windeployqt --compiler-runtime --qmldir ./  --dir ./build-windows/MeshViewer/ --libdir ./build-windows/MeshViewer/ --plugindir ./build-windows/MeshViewer/ ./build-windows/MeshViewer.exe
     - cp ./build-windows/MeshViewer.exe ./build-windows/MeshViewer/
     - cd ./build-windows && tar -cvzf ./MeshViewer-Windows.zip ./MeshViewer
   artifacts:
