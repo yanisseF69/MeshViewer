@@ -50,6 +50,7 @@ release-github:
     - build-linux
   script:
     - apk add --no-cache curl jq
+
     - export GITHUB_REPO="yanisseF69/MeshViewer"
     - export RELEASE_NAME="Continuous Build"
     - export ZIP_PATH="build-windows/MeshViewer-Windows.zip"
@@ -57,11 +58,10 @@ release-github:
     - export TAG_NAME="continuous"
 
     - |
+      echo "Fetching release..."
       RELEASE_ID=$(curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
-        "https://api.github.com/repos/${GITHUB_REPO}/releases/tags/${TAG_NAME}" \
-        | jq -r '.id // empty')
+        "https://api.github.com/repos/${GITHUB_REPO}/releases/tags/${TAG_NAME}" | jq -r '.id // empty')
 
-    - |
       if [ -z "$RELEASE_ID" ]; then
         echo "Creating release..."
         RESPONSE=$(curl -s -X POST \
@@ -75,19 +75,36 @@ release-github:
       fi
 
     - |
-      echo "Uploading asset..."
-      curl -s -X POST \
-        -H "Authorization: token ${GITHUB_TOKEN}" \
-        -H "Content-Type: application/zip" \
-        --data-binary @"${ZIP_PATH}" \
-        "https://uploads.github.com/repos/${GITHUB_REPO}/releases/${RELEASE_ID}/assets?name=$(basename ${ZIP_PATH})"
+      for FILE_PATH in "${ZIP_PATH}" "${APPIMAGE_PATH}"; do
+        FILE_NAME=$(basename "${FILE_PATH}")
+        echo "Checking for existing asset: ${FILE_NAME}"
+
+        ASSET_ID=$(curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
+          "https://api.github.com/repos/${GITHUB_REPO}/releases/${RELEASE_ID}/assets" \
+          | jq -r ".[] | select(.name==\"${FILE_NAME}\") | .id")
+
+        if [ -n "$ASSET_ID" ] && [ "$ASSET_ID" != "null" ]; then
+          echo "Deleting existing asset ID: ${ASSET_ID}"
+          curl -s -X DELETE -H "Authorization: token ${GITHUB_TOKEN}" \
+            "https://api.github.com/repos/${GITHUB_REPO}/releases/assets/${ASSET_ID}"
+        fi
+      done
+
     - |
-      echo "Uploading asset..."
-      curl -s -X POST \
-        -H "Authorization: token ${GITHUB_TOKEN}" \
-        -H "Content-Type: application/zip" \
-        --data-binary @"${ZIP_PATH}" \
-        "https://uploads.github.com/repos/${GITHUB_REPO}/releases/${RELEASE_ID}/assets?name=$(basename ${APPIMAGE_PATH})"
+      echo "Uploading assets..."
+      for FILE_PATH in "${ZIP_PATH}" "${APPIMAGE_PATH}"; do
+        FILE_NAME=$(basename "${FILE_PATH}")
+        if [ -f "${FILE_PATH}" ]; then
+          echo "Uploading ${FILE_NAME}..."
+          curl -s -X POST \
+            -H "Authorization: token ${GITHUB_TOKEN}" \
+            -H "Content-Type: application/octet-stream" \
+            --data-binary @"${FILE_PATH}" \
+            "https://uploads.github.com/repos/${GITHUB_REPO}/releases/${RELEASE_ID}/assets?name=${FILE_NAME}"
+        else
+          echo "File not found: ${FILE_PATH}"
+        fi
+      done
 
   only:
     - main
