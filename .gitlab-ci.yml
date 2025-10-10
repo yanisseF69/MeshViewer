@@ -7,12 +7,14 @@ build-windows:
   image: stateoftheartio/qt6:6.7-mingw-aqt
   script:
     - set -e
+    - sudo apt update
+    - sudo apt install -y p7zip-full
     - mkdir -p build-windows
     - qt-cmake . -G Ninja -B ./build-windows
     - cmake --build ./build-windows
     - windeployqt --compiler-runtime --qmldir ./  --dir ./build-windows/MeshViewer/ --libdir ./build-windows/MeshViewer/ --plugindir ./build-windows/MeshViewer/ ./build-windows/MeshViewer.exe
     - cp ./build-windows/MeshViewer.exe ./build-windows/MeshViewer/
-    - cd ./build-windows && tar -cvzf ./MeshViewer-Windows.zip ./MeshViewer
+    - cd ./build-windows && 7z a ./MeshViewer-Windows.zip ./MeshViewer
   artifacts:
     paths:
       - build-windows/MeshViewer-Windows.zip
@@ -129,7 +131,7 @@ release-github:
             --data-binary @"${FILE_PATH}" \
             "https://uploads.github.com/repos/${GITHUB_REPO}/releases/${RELEASE_ID}/assets?name=${FILE_NAME}"
         else
-          echo "⚠️ File not found: ${FILE_PATH}"
+          echo "File not found: ${FILE_PATH}"
         fi
       done
 
