@@ -31,9 +31,10 @@ build-linux:
     - cmake . -B ./build-linux
     - cmake --build ./build-linux
     - cmake --install ${PWD}/build-linux --prefix ${PWD}/build-linux/MeshViewer.AppDir
-    - mv ${PWD}/build-linux/MeshViewer.AppDir/* $(mkdir -p ${PWD}/build-linux/MeshViewer.AppDir/usr && echo ${PWD}/build-linux/MeshViewer.AppDir/usr)
-    - cp ./resources/* /home/user/build/MeshViewer.AppDir
+    - cp ./resources/* ${PWD}build-linux/MeshViewer.AppDir
+    - mkdir ./build-linux/MeshViewer.AppDir/usr
     - cd ./build-linux/MeshViewer.AppDir
+    - for dir in bin lib plugins translations; do mv $dir usr/; done
     - ln -s usr/bin/MeshViewer AppRun
     - cd .. && appimagetool --appimage-extract-and-run ./MeshViewer.AppDir ./MeshViewer-linux_x86_64.AppImage
   artifacts:
