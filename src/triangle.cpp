@@ -1,5 +1,7 @@
 #include "triangle.h"
 
+#include <cstddef>
+
 Triangle::Triangle() {}
 
 Triangle::Triangle(const unsigned int &v0, const unsigned int &v1, const unsigned int &v2) {
@@ -19,7 +21,7 @@ int Triangle::localIndex(unsigned int indice) const {
 }
 
 std::pair<int, int> Triangle::findCommonEdge(const Triangle &t) const {
-    for (int i = 0; i < 3; i++) {
+    for (std::size_t i = 0; i < 3; i++) {
         int v1 = idVertices[i];
         int v2 = idVertices[(i + 1) % 3];
 

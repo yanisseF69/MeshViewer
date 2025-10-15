@@ -2,6 +2,7 @@
 #include "edgeKeyHash.h"
 
 #include <iostream>
+#include <cstddef>
 #include <fstream>
 #include <sstream>
 #include <exception>
@@ -40,10 +41,10 @@ void Mesh::sew() {
 
     std::unordered_map<std::pair<int,int>, std::pair<int,int>, EdgeKeyHash> halfedge;
 
-    for (int fi = 0; fi < static_cast<int>(faces.size()); ++fi) {
+    for (std::size_t fi = 0; fi < faces.size(); ++fi) {
         faces[fi].idFaces.resize(3, -1);
         auto& tri = faces[fi];
-        for (int e = 0; e < 3; ++e) {
+        for (std::size_t e = 0; e < 3; ++e) {
             int u = tri.idVertices[e];
             int v = tri.idVertices[(e+1)%3];
             auto key = std::make_pair(u, v);
@@ -51,7 +52,7 @@ void Mesh::sew() {
         }
     }
 
-    for (int fi = 0; fi < static_cast<int>(faces.size()); ++fi) {
+    for (std::size_t fi = 0; fi < faces.size(); ++fi) {
         auto& tri = faces[fi];
         for (int e = 0; e < 3; ++e) {
             if (tri.idFaces[e] != -1) continue;
@@ -438,7 +439,7 @@ void Mesh::computeNormals() {
         v.normal = QVector3D(0,0,0);
     }
 
-    for (int i = 0; i < faces.size(); i ++) {
+    for (std::size_t i = 0; i < faces.size(); i ++) {
         unsigned int i0 = faces[i].idVertices[0];
         unsigned int i1 = faces[i].idVertices[1];
         unsigned int i2 = faces[i].idVertices[2];
@@ -712,7 +713,7 @@ int Mesh::insert(float x, float y, float z) {
     int pIndex = vertices.size() - 1;
 
     int containingTriangle = -1;
-    for (int i = 0; i < (int)faces.size(); i++) {
+    for (std::size_t i = 0; i < faces.size(); i++) {
         int result = pointInTriangle(pIndex, i);
         if (result >= 0) {
             containingTriangle = i;
@@ -805,7 +806,7 @@ void Mesh::lawsonAlgorithm() {
     int maxIterations = faces.size() * faces.size();
     int iterations = 0;
 
-    for (int i = 0; i < (int)faces.size(); i++) {
+    for (std::size_t i = 0; i < faces.size(); i++) {
         for (int j : faces[i].idFaces) {
             if (i < j) {
                 edgeQueue.push({i, j});

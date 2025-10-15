@@ -1,5 +1,5 @@
 #include "openGLWidget.h"
-#include "config.h"
+#include "shaders.h"
 
 OpenGLWidget::OpenGLWidget(QWidget *parent) : QOpenGLWidget(parent), VAO(0), VBO(0), EBO(0), shaderLight(nullptr), shaderTexture(nullptr), shaderCurrent(nullptr), texture(nullptr), leftPressed(false), middlePressed(false), wireframe(false), useTexCoords(false) {
 
@@ -136,16 +136,15 @@ void OpenGLWidget::initializeGL() {
 
     glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 
-    QString shaderDir = QString(MESHVIEWER_DATA_DIR) + "/shaders/";
 
     shaderLight = new QOpenGLShaderProgram(this);
-    shaderLight->addShaderFromSourceFile(QOpenGLShader::Vertex, shaderDir + "vertex.glsl");
-    shaderLight->addShaderFromSourceFile(QOpenGLShader::Fragment, shaderDir + "fragment.glsl");
+    shaderLight->addShaderFromSourceCode(QOpenGLShader::Vertex, vertexShader);
+    shaderLight->addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentShader);
     shaderLight->link();
 
     shaderTexture = new QOpenGLShaderProgram(this);
-    shaderTexture->addShaderFromSourceFile(QOpenGLShader::Vertex, shaderDir + "vertexTex.glsl");
-    shaderTexture->addShaderFromSourceFile(QOpenGLShader::Fragment, shaderDir + "fragmentTex.glsl");
+    shaderTexture->addShaderFromSourceCode(QOpenGLShader::Vertex, vertexTexShader);
+    shaderTexture->addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentTexShader);
     shaderTexture->link();
 
     shaderCurrent = shaderLight;

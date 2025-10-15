@@ -4,7 +4,7 @@ stages:
 
 build-windows:
   stage: build
-  image: stateoftheartio/qt6:6.7-mingw-aqt
+  image: stateoftheartio/qt6:6.6-mingw-aqt
   script:
     - set -e
     - sudo apt update
@@ -24,19 +24,18 @@ build-windows:
 
 build-linux:
   stage: build
-  image: stateoftheartio/qt6:6.7-gcc-aqt
+  image: yaya699/meshviewer-qt:linux-6.6.2
   script:
     - set -e
-    - sudo apt update
-    - sudo apt install -y libgl-dev libvulkan-dev wget file
     - mkdir -p build-linux
-    - qt-cmake . -G Ninja -B ./build-linux
+    - cmake . -B ./build-linux
     - cmake --build ./build-linux
-    - cd ./build-linux
-    - linuxdeploy --executable ./MeshViewer --appdir ./deploy  --desktop-file ../data/MeshViewer.desktop --icon-file ../data/meshviewer.png --plugin qt;
-    - wget -q https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage -O ./appimagetool;
-    - chmod +x ./appimagetool
-    - ./appimagetool --appimage-extract-and-run ./deploy ./MeshViewer-linux_x86_64.AppImage
+    - cmake --install ${PWD}/build-linux --prefix ${PWD}/build-linux/MeshViewer.AppDir
+    - mv ${PWD}/build-linux/MeshViewer.AppDir/* $(mkdir -p ${PWD}/build-linux/MeshViewer.AppDir/usr && echo ${PWD}/build-linux/MeshViewer.AppDir/usr)
+    - cp ./resources/* /home/user/build/MeshViewer.AppDir
+    - cd ./build-linux/MeshViewer.AppDir
+    - ln -s usr/bin/MeshViewer AppRun
+    - cd .. && appimagetool --appimage-extract-and-run ./MeshViewer.AppDir ./MeshViewer-linux_x86_64.AppImage
   artifacts:
     paths:
       - build-linux/MeshViewer-linux_x86_64.AppImage
