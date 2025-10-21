@@ -72,6 +72,8 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classMesh-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">Mesh Class Reference</div></div>
 </div><!--header-->
@@ -157,10 +159,262 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>normalize</b> ()</td>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>deNormalize</b> ()</td></tr>
 <tr class="memdesc:a169c28de22cdaa05e9bca7b514406397"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalize the mesh, in case of the radius is too large for the camera. <br /></td></tr>
 <tr class="separator:a169c28de22cdaa05e9bca7b514406397"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:a0c5ad96ef4f1c8d3b23d03e8aed98f50"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMesh.html#a0c5ad96ef4f1c8d3b23d03e8aed98f50">findNeighbor</a> (unsigned int triIndex, unsigned int a, unsigned int b) const</td></tr>
+<tr class="memdesc:a0c5ad96ef4f1c8d3b23d03e8aed98f50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function who find the neighbor of a triangle.  <br /></td></tr>
+<tr class="separator:a0c5ad96ef4f1c8d3b23d03e8aed98f50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67d9b4013ab7d8c32050ea768c46c5cc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMesh.html#a67d9b4013ab7d8c32050ea768c46c5cc">faceArea</a> (int faceIndex) const</td></tr>
+<tr class="memdesc:a67d9b4013ab7d8c32050ea768c46c5cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the area of a face.  <br /></td></tr>
+<tr class="separator:a67d9b4013ab7d8c32050ea768c46c5cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa365461672f50bdcfbc8801d81a13114"><td class="memItemLeft" align="right" valign="top"><a id="aa365461672f50bdcfbc8801d81a13114" name="aa365461672f50bdcfbc8801d81a13114"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>computeNormals</b> ()</td></tr>
+<tr class="memdesc:aa365461672f50bdcfbc8801d81a13114"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the normals of each vertex. <br /></td></tr>
+<tr class="separator:aa365461672f50bdcfbc8801d81a13114"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af39a2a23e4238fe6a3c1120890e36cf3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMesh.html#af39a2a23e4238fe6a3c1120890e36cf3">triangleSplit</a> (int p, int triIndex)</td></tr>
+<tr class="memdesc:af39a2a23e4238fe6a3c1120890e36cf3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Split a triangle by 3.  <br /></td></tr>
+<tr class="separator:af39a2a23e4238fe6a3c1120890e36cf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8926a81269c4a0e3692aa42ec3413a60"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMesh.html#a8926a81269c4a0e3692aa42ec3413a60">edgeFlip</a> (int t1, int t2)</td></tr>
+<tr class="memdesc:a8926a81269c4a0e3692aa42ec3413a60"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flip the common edge between 2 triangles.  <br /></td></tr>
+<tr class="separator:a8926a81269c4a0e3692aa42ec3413a60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8110387c2dbd037ed8f4983f0228fcd2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMesh.html#a8110387c2dbd037ed8f4983f0228fcd2">edgeSplit</a> (int p, int t1, int t2)</td></tr>
+<tr class="memdesc:a8110387c2dbd037ed8f4983f0228fcd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Split the common edge between 2 triangles.  <br /></td></tr>
+<tr class="separator:a8110387c2dbd037ed8f4983f0228fcd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a02fa7197ee462dfcc4b23b4daf249d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMesh.html#a5a02fa7197ee462dfcc4b23b4daf249d">orientationTest</a> (int p, int q, int r) const</td></tr>
+<tr class="memdesc:a5a02fa7197ee462dfcc4b23b4daf249d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the orientation test of a triangle.  <br /></td></tr>
+<tr class="separator:a5a02fa7197ee462dfcc4b23b4daf249d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0fae43c0d69625138c866a3878be7a6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMesh.html#ae0fae43c0d69625138c866a3878be7a6">pointInTriangle</a> (int p, int triIndex) const</td></tr>
+<tr class="memdesc:ae0fae43c0d69625138c866a3878be7a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if a point is inside a triangle.  <br /></td></tr>
+<tr class="separator:ae0fae43c0d69625138c866a3878be7a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d10ce3845704916095a5f8c084caab1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMesh.html#a0d10ce3845704916095a5f8c084caab1">insert</a> (float x, float y, float z)</td></tr>
+<tr class="memdesc:a0d10ce3845704916095a5f8c084caab1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert a point inside a mesh.  <br /></td></tr>
+<tr class="separator:a0d10ce3845704916095a5f8c084caab1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1977c7c99c32a55604c101e7b0341119"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMesh.html#a1977c7c99c32a55604c101e7b0341119">isLocallyDelaunay</a> (int t1, int t2) const</td></tr>
+<tr class="memdesc:a1977c7c99c32a55604c101e7b0341119"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if 2 triangles are locally de Delaunay.  <br /></td></tr>
+<tr class="separator:a1977c7c99c32a55604c101e7b0341119"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a451d0420679b6396f7c72e5e1368b4f2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMesh.html#a451d0420679b6396f7c72e5e1368b4f2">isInCircumcircleNorm</a> (int a, int b, int c, int d) const</td></tr>
+<tr class="memdesc:a451d0420679b6396f7c72e5e1368b4f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if a point is inside the Circumcircle of a triangle.  <br /></td></tr>
+<tr class="separator:a451d0420679b6396f7c72e5e1368b4f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a110e90a73432fb80aeba321830e2cbc7"><td class="memItemLeft" align="right" valign="top"><a id="a110e90a73432fb80aeba321830e2cbc7" name="a110e90a73432fb80aeba321830e2cbc7"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lawsonAlgorithm</b> ()</td></tr>
+<tr class="memdesc:a110e90a73432fb80aeba321830e2cbc7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs the Lawsons' algorithm on he whole mesh. <br /></td></tr>
+<tr class="separator:a110e90a73432fb80aeba321830e2cbc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f87338180f9395f7f88ebf92123f4fa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMesh.html#a7f87338180f9395f7f88ebf92123f4fa">lawsonLocalUpdate</a> (int p)</td></tr>
+<tr class="memdesc:a7f87338180f9395f7f88ebf92123f4fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs the Lawsons' algorithm locally in the incident faces around a point.  <br /></td></tr>
+<tr class="separator:a7f87338180f9395f7f88ebf92123f4fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6940d673430cbc827ea1d283a7eec75a"><td class="memItemLeft" align="right" valign="top"><a id="a6940d673430cbc827ea1d283a7eec75a" name="a6940d673430cbc827ea1d283a7eec75a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>initializeSuperTriangle</b> ()</td></tr>
+<tr class="memdesc:a6940d673430cbc827ea1d283a7eec75a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize a super bounding triangle, useful for the construction of the Delaunay mesh. <br /></td></tr>
+<tr class="separator:a6940d673430cbc827ea1d283a7eec75a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea1b11f590a16be9595cc173cb885f7b"><td class="memItemLeft" align="right" valign="top"><a id="aea1b11f590a16be9595cc173cb885f7b" name="aea1b11f590a16be9595cc173cb885f7b"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>removeSuperTriangle</b> ()</td></tr>
+<tr class="memdesc:aea1b11f590a16be9595cc173cb885f7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove the super bounding triangle and reconnect correctly the mesh. <br /></td></tr>
+<tr class="separator:aea1b11f590a16be9595cc173cb885f7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:a6465a888c97232a39e12aad008c969c3"><td class="memItemLeft" align="right" valign="top"><a id="a6465a888c97232a39e12aad008c969c3" name="a6465a888c97232a39e12aad008c969c3"></a>
+std::vector&lt; <a class="el" href="structVertex.html">Vertex</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>vertices</b></td></tr>
+<tr class="separator:a6465a888c97232a39e12aad008c969c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad204d43f5b2aa9b4efcef607f67b8b2b"><td class="memItemLeft" align="right" valign="top"><a id="ad204d43f5b2aa9b4efcef607f67b8b2b" name="ad204d43f5b2aa9b4efcef607f67b8b2b"></a>
+std::vector&lt; <a class="el" href="structTriangle.html">Triangle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>faces</b></td></tr>
+<tr class="separator:ad204d43f5b2aa9b4efcef607f67b8b2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60756c4f4f4b464be9ca5be7e419f7c5"><td class="memItemLeft" align="right" valign="top"><a id="a60756c4f4f4b464be9ca5be7e419f7c5" name="a60756c4f4f4b464be9ca5be7e419f7c5"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>normCoeff</b></td></tr>
+<tr class="separator:a60756c4f4f4b464be9ca5be7e419f7c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afadcd1a28ae58b4a5e73b9faf5c48b90"><td class="memItemLeft" align="right" valign="top"><a id="afadcd1a28ae58b4a5e73b9faf5c48b90" name="afadcd1a28ae58b4a5e73b9faf5c48b90"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasTexCoords</b></td></tr>
+<tr class="separator:afadcd1a28ae58b4a5e73b9faf5c48b90"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The <a class="el" href="classMesh.html" title="The Mesh class, used for mesh loading and processing.">Mesh</a> class, used for mesh loading and processing. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a8926a81269c4a0e3692aa42ec3413a60" name="a8926a81269c4a0e3692aa42ec3413a60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8926a81269c4a0e3692aa42ec3413a60">&#9670;&#160;</a></span>edgeFlip()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Mesh::edgeFlip </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>t1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>t2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Flip the common edge between 2 triangles. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">t1</td><td>: The indice of the first triangle. </td></tr>
+    <tr><td class="paramname">t2</td><td>: the indice if the second triangle. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a8110387c2dbd037ed8f4983f0228fcd2" name="a8110387c2dbd037ed8f4983f0228fcd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8110387c2dbd037ed8f4983f0228fcd2">&#9670;&#160;</a></span>edgeSplit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Mesh::edgeSplit </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>p</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>t1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>t2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Split the common edge between 2 triangles. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">p</td><td>: The indice of the point inside the edge. </td></tr>
+    <tr><td class="paramname">t1</td><td>: The indice of the first triangle. </td></tr>
+    <tr><td class="paramname">t2</td><td>: the indice if the second triangle. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a67d9b4013ab7d8c32050ea768c46c5cc" name="a67d9b4013ab7d8c32050ea768c46c5cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67d9b4013ab7d8c32050ea768c46c5cc">&#9670;&#160;</a></span>faceArea()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float Mesh::faceArea </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>faceIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compute the area of a face. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">faceIndex</td><td>: Indice of the triangle. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The face area. </dd></dl>
+
+</div>
+</div>
+<a id="a0c5ad96ef4f1c8d3b23d03e8aed98f50" name="a0c5ad96ef4f1c8d3b23d03e8aed98f50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c5ad96ef4f1c8d3b23d03e8aed98f50">&#9670;&#160;</a></span>findNeighbor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Mesh::findNeighbor </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>triIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Function who find the neighbor of a triangle. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">triIndex</td><td>: Indice of the first triangle. </td></tr>
+    <tr><td class="paramname">a</td><td>: First point of the edge. </td></tr>
+    <tr><td class="paramname">b</td><td>: Second point of the edge. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The indice of the neighbor, else -1. </dd></dl>
+
+</div>
+</div>
 <a id="aecf0b14e57804c6eae7b927330c76288" name="aecf0b14e57804c6eae7b927330c76288"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aecf0b14e57804c6eae7b927330c76288">&#9670;&#160;</a></span>getBoundingRadius()</h2>
 
@@ -198,6 +452,199 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>deNormalize</b> ()</t
 
 <p>Get the point corresponding to the center of the mesh. </p>
 <dl class="section return"><dt>Returns</dt><dd>The center point of the mesh. </dd></dl>
+
+</div>
+</div>
+<a id="a0d10ce3845704916095a5f8c084caab1" name="a0d10ce3845704916095a5f8c084caab1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d10ce3845704916095a5f8c084caab1">&#9670;&#160;</a></span>insert()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Mesh::insert </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Insert a point inside a mesh. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>: X coordinate of the point. </td></tr>
+    <tr><td class="paramname">y</td><td>: Y coordinate of the point. </td></tr>
+    <tr><td class="paramname">z</td><td>: Z coordinate of the point. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The index of the new point if the point is inserted, else -1. </dd></dl>
+
+</div>
+</div>
+<a id="a451d0420679b6396f7c72e5e1368b4f2" name="a451d0420679b6396f7c72e5e1368b4f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a451d0420679b6396f7c72e5e1368b4f2">&#9670;&#160;</a></span>isInCircumcircleNorm()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Mesh::isInCircumcircleNorm </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Check if a point is inside the Circumcircle of a triangle. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">a</td><td>: The index of the first point. </td></tr>
+    <tr><td class="paramname">b</td><td>: The index of the second point. </td></tr>
+    <tr><td class="paramname">c</td><td>: The index of the third point. </td></tr>
+    <tr><td class="paramname">d</td><td>: The index of the tested point. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the point is inside the circumcircle, else false. </dd></dl>
+
+</div>
+</div>
+<a id="a1977c7c99c32a55604c101e7b0341119" name="a1977c7c99c32a55604c101e7b0341119"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1977c7c99c32a55604c101e7b0341119">&#9670;&#160;</a></span>isLocallyDelaunay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Mesh::isLocallyDelaunay </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>t1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>t2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Check if 2 triangles are locally de Delaunay. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">t1</td><td>: The indice of the first triangle. </td></tr>
+    <tr><td class="paramname">t2</td><td>: The indice of the second triangle. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the triangles are de Delaunay, else false. </dd></dl>
+
+</div>
+</div>
+<a id="a7f87338180f9395f7f88ebf92123f4fa" name="a7f87338180f9395f7f88ebf92123f4fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f87338180f9395f7f88ebf92123f4fa">&#9670;&#160;</a></span>lawsonLocalUpdate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Mesh::lawsonLocalUpdate </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>p</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Performs the Lawsons' algorithm locally in the incident faces around a point. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">p</td><td>: The indice of the point where the algorithm starts. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -309,6 +756,105 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>deNormalize</b> ()</t
 
 </div>
 </div>
+<a id="a5a02fa7197ee462dfcc4b23b4daf249d" name="a5a02fa7197ee462dfcc4b23b4daf249d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a02fa7197ee462dfcc4b23b4daf249d">&#9670;&#160;</a></span>orientationTest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float Mesh::orientationTest </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>p</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>q</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>r</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compute the orientation test of a triangle. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">p</td><td></td></tr>
+    <tr><td class="paramname">q</td><td></td></tr>
+    <tr><td class="paramname">r</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Positive value if counterclockwise, else negative value. </dd></dl>
+
+</div>
+</div>
+<a id="ae0fae43c0d69625138c866a3878be7a6" name="ae0fae43c0d69625138c866a3878be7a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0fae43c0d69625138c866a3878be7a6">&#9670;&#160;</a></span>pointInTriangle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Mesh::pointInTriangle </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>p</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>triIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Check if a point is inside a triangle. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">p</td><td>: The indice of the tested point. </td></tr>
+    <tr><td class="paramname">triIndex</td><td>: The indice of the triangle. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Positive value if the point is inside a triangle, else negative value. </dd></dl>
+
+</div>
+</div>
 <a id="a07f5a934061e9ea2183a85747049b80e" name="a07f5a934061e9ea2183a85747049b80e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a07f5a934061e9ea2183a85747049b80e">&#9670;&#160;</a></span>saveFile()</h2>
 
@@ -414,6 +960,51 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>deNormalize</b> ()</t
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>MeshError::OK if the function terminates correctly, other else. </dd></dl>
+
+</div>
+</div>
+<a id="af39a2a23e4238fe6a3c1120890e36cf3" name="af39a2a23e4238fe6a3c1120890e36cf3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af39a2a23e4238fe6a3c1120890e36cf3">&#9670;&#160;</a></span>triangleSplit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Mesh::triangleSplit </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>p</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>triIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Split a triangle by 3. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">p</td><td>: The point inside the triangle all the 3 triangles will contain this point. </td></tr>
+    <tr><td class="paramname">triIndex</td><td>: The indice of the splited triangle. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

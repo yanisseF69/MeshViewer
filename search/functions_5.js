@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['savefile_0',['saveFile',['../classMesh.html#a07f5a934061e9ea2183a85747049b80e',1,'Mesh']]],
-  ['saveobj_1',['saveOBJ',['../classMesh.html#a60648425a5dae4f7780c47584e30d172',1,'Mesh']]],
-  ['saveoff_2',['saveOFF',['../classMesh.html#a41b93634024808b5e7fea354c3f7c9c7',1,'Mesh']]],
-  ['savetxt_3',['saveTXT',['../classMesh.html#ab00c68a9d76b564c0f0b402e784e6e4d',1,'Mesh']]],
-  ['sew_4',['sew',['../classMesh.html#ab57edd37f4de1c37acbf10951fd61751',1,'Mesh']]]
+  ['initializesupertriangle_0',['initializeSuperTriangle',['../classMesh.html#a6940d673430cbc827ea1d283a7eec75a',1,'Mesh']]],
+  ['insert_1',['insert',['../classMesh.html#a0d10ce3845704916095a5f8c084caab1',1,'Mesh']]],
+  ['isincircumcirclenorm_2',['isInCircumcircleNorm',['../classMesh.html#a451d0420679b6396f7c72e5e1368b4f2',1,'Mesh']]],
+  ['islocallydelaunay_3',['isLocallyDelaunay',['../classMesh.html#a1977c7c99c32a55604c101e7b0341119',1,'Mesh']]]
 ];

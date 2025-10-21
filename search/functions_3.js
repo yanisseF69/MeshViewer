@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['loadfile_0',['loadFile',['../classMesh.html#a45364421e69c3e2f823074a94faaac10',1,'Mesh']]],
-  ['loadobj_1',['loadOBJ',['../classMesh.html#a44cd27ac865af25478985382dda523e9',1,'Mesh']]],
-  ['loadoff_2',['loadOFF',['../classMesh.html#a6cad93169f7bfeba3df0df18cf9b8dd9',1,'Mesh']]],
-  ['loadtxt_3',['loadTXT',['../classMesh.html#a392395eb4ec747a1cdfd61621b425295',1,'Mesh']]]
+  ['facearea_0',['faceArea',['../classMesh.html#a67d9b4013ab7d8c32050ea768c46c5cc',1,'Mesh']]],
+  ['findneighbor_1',['findNeighbor',['../classMesh.html#a0c5ad96ef4f1c8d3b23d03e8aed98f50',1,'Mesh']]]
 ];
