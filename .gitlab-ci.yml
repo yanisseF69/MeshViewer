@@ -50,10 +50,10 @@ test-linux:
   image: yaya699/meshviewer-qt:linux-6.6.2
   script:
     - set -e
+    - sudo apt update && sudo apt install -y python3-pip cmake g++ libgtest-dev
+    - pip3 install gcovr
     - mkdir -p build-tests
-    - cmake -B build-tests -S . -DCMAKE_BUILD_TYPE=Debug \
-        -DCMAKE_CXX_FLAGS="--coverage -O0 -g" \
-        -DCMAKE_EXE_LINKER_FLAGS="--coverage"
+    - cmake -B build-tests -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="--coverage -O0 -g" -DCMAKE_EXE_LINKER_FLAGS="--coverage"
     - cmake --build build-tests
     - cd build-tests && ctest --output-on-failure
     - gcovr -r . --xml-pretty -o build-tests/coverage.xml
