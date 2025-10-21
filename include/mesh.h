@@ -118,7 +118,7 @@ public:
      */
     void deNormalize();
 
-private:
+protected:
 
     /**
      * @brief Function who find the neighbor of a triangle.

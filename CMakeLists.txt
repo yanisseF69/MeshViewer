@@ -30,7 +30,6 @@ set(HEADERS
     include/shaders.h
 )
 
-
 qt_add_executable(MeshViewer WIN32 MACOSX_BUNDLE
     ${SOURCES} ${HEADERS}
 )
@@ -64,3 +63,6 @@ qt_generate_deploy_app_script(
 )
 
 install(SCRIPT ${deploy_script})
+
+enable_testing()
+add_subdirectory(tests)
