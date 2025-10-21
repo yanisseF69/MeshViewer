@@ -55,16 +55,16 @@ test-linux:
     - mkdir -p build-tests
     - cmake -B build-tests -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="--coverage -O0 -g" -DCMAKE_EXE_LINKER_FLAGS="--coverage"
     - cmake --build build-tests
-    - cd build-tests && ctest --output-on-failure
-    - gcovr -r . --xml-pretty -o build-tests/coverage.xml
+    - cd build-tests && ctest --output-on-failure --output-junit junit-report.xml
+    - gcovr -r . --xml-pretty -o coverage.xml
   artifacts:
     when: always
     paths:
       - build-tests
-      - build-tests/Testing
-      - build-tests/CMakeFiles/CMakeOutput.log
+      - build-tests/junit-report.xml
+      - build-tests/coverage.xml
     reports:
-      junit: build-tests/Testing/**/*.xml
+      junit: build-tests/junit-report.xml
       coverage_report:
               coverage_format: cobertura
               path: build-tests/coverage.xml
